@@ -17,9 +17,6 @@ public class TeamObjectPipeline extends OpenCvPipeline {
     midPerc,
     rightPerc,
     maxPerc;
-    private boolean isLeft,
-    isRight,
-    isMid;
     public enum ObjectPosition {
         LEFT,
         CENTER,
@@ -73,7 +70,7 @@ public class TeamObjectPipeline extends OpenCvPipeline {
         leftPerc = Core.countNonZero(leftMat);
         midPerc = Core.countNonZero(midMat);
         rightPerc = Core.countNonZero(rightMat);
-        double maxPerc = Math.max(leftPerc,Math.max(rightPerc,midPerc));
+        maxPerc = Math.max(leftPerc,Math.max(rightPerc,midPerc));
         if (maxPerc == leftPerc) {
             position = ObjectPosition.LEFT;
             Imgproc.rectangle(
