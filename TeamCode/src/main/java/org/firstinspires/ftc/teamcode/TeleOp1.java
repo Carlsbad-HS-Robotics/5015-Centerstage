@@ -34,12 +34,15 @@ public class TeleOp1 extends LinearOpMode {
         );
         RevIMU imu = new RevIMU(hardwareMap);
         imu.init();
+        /*
         TriggerReader rTrigger = new TriggerReader(
                 coDriver, GamepadKeys.Trigger.RIGHT_TRIGGER
         );
         TriggerReader lTrigger = new TriggerReader(
                 coDriver, GamepadKeys.Trigger.LEFT_TRIGGER
         );
+        */
+
         /*
         arm_subsystem = new Arm(hardwareMap, "armcontrol");
         m_lowCommand = new GrabCommand(arm_subsystem);
@@ -49,7 +52,7 @@ public class TeleOp1 extends LinearOpMode {
 
         waitForStart();
         if(isStopRequested()) return;
-        while(opModeIsActive()){
+        while(!isStopRequested()){
             drive.driveFieldCentric(
                     driver.getLeftX(),
                     driver.getLeftY(),
