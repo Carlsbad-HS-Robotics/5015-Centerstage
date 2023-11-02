@@ -26,7 +26,11 @@ public class TeleOp1 extends LinearOpMode {
     driver = new GamepadEx(gamepad1);
     coDriver = new GamepadEx(gamepad2);
    // Arm arm = new Arm(hardwareMap, "grabCommand");
-        MecanumDrive drive = new MecanumDrive(
+    new Motor(hardwareMap, "leftFront", Motor.GoBILDA.RPM_312).setInverted(true);
+    new Motor(hardwareMap, "rightFront", Motor.GoBILDA.RPM_312);
+    new Motor(hardwareMap, "leftRear", Motor.GoBILDA.RPM_312).setInverted(true);
+    new Motor(hardwareMap, "rightRear", Motor.GoBILDA.RPM_312).setInverted(true);
+        /*MecanumDrive drive = new MecanumDrive(
                 new Motor(hardwareMap, "leftFront", Motor.GoBILDA.RPM_312),
                 new Motor(hardwareMap, "rightFront", Motor.GoBILDA.RPM_312),
                 new Motor(hardwareMap, "leftRear", Motor.GoBILDA.RPM_312),
@@ -34,7 +38,6 @@ public class TeleOp1 extends LinearOpMode {
         );
         RevIMU imu = new RevIMU(hardwareMap);
         imu.init();
-        /*
         TriggerReader rTrigger = new TriggerReader(
                 coDriver, GamepadKeys.Trigger.RIGHT_TRIGGER
         );
