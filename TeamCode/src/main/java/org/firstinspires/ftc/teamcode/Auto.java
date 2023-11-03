@@ -32,19 +32,30 @@ public class Auto extends LinearOpMode {
         Trajectory left = drive.trajectoryBuilder(new Pose2d())
                 .strafeLeft(10)
                 .build();
+        Trajectory right = drive.trajectoryBuilder(new Pose2d())
+                .strafeRight(10)
+                .build();
+        Trajectory backward = drive.trajectoryBuilder(new Pose2d())
+                        .back(20)
+                        .build();
 
 
         waitForStart();
         if(isStopRequested()) return;
         while(opModeIsActive()) {
             //Code goes here:
-            drive.followTrajectory(left );
-            sleep(2000);
+            drive.followTrajectory(forward );
+            drive.followTrajectory(left);
+            drive.followTrajectory(forward);
+            drive.followTrajectory(right);
+            drive.followTrajectory(backward);
 
 
             break;
         }
     }
+   // void forward(5000)
+
     void left(){
         frontRightMotor.setPower(1);
         frontLeftMotor.setPower(-1);
