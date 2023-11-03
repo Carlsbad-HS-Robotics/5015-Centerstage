@@ -28,10 +28,10 @@ public class Arm extends SubsystemBase {
 
     }
     public void low(){
-            arm1.turnToAngle(0);
         arm1.turnToAngle(0);
+        arm2.turnToAngle(0);
 
-            isLow = false;
+            isLow = true;
 
 
     }
@@ -44,8 +44,9 @@ public class Arm extends SubsystemBase {
          isHolding = false;
     }
     public void high(){
-
-            isLow = true;
+        arm1.turnToAngle(170);
+        arm2.turnToAngle(170);
+            isLow = false;
 
     }
     public boolean getHoldState(){

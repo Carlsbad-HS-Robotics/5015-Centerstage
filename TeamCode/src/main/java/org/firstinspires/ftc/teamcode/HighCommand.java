@@ -2,15 +2,16 @@ package org.firstinspires.ftc.teamcode;
 
 import com.arcrobotics.ftclib.command.CommandBase;
 
-public class GrabCommand extends CommandBase {
+public class HighCommand extends CommandBase {
     private final Arm m_arm;
-    public GrabCommand(Arm subsystem){
+    public HighCommand(Arm subsystem){
+
         m_arm = subsystem;
         addRequirements(m_arm);
     }
     @Override
     public void initialize(){
-        m_arm.grab();
+        m_arm.high();
     }
     @Override
     public boolean isFinished(){
