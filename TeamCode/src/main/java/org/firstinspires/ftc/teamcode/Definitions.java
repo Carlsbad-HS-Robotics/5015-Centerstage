@@ -3,6 +3,9 @@ package org.firstinspires.ftc.teamcode;
 import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.hardwareMap;
 import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
 
+import androidx.annotation.NonNull;
+
+import com.arcrobotics.ftclib.hardware.RevIMU;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -15,6 +18,17 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.Camera;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AngularVelocity;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.MagneticFlux;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.firstinspires.ftc.robotcore.external.navigation.Position;
+import org.firstinspires.ftc.robotcore.external.navigation.Quaternion;
+import org.firstinspires.ftc.robotcore.external.navigation.Temperature;
+import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 
@@ -47,13 +61,12 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 public class Definitions {
     public static final String VUFORIA_KEY = "AQFyZOr/////AAABmRL+3QMh6kiBj2OqwKGebApeLvS635fqPcuCrcT8QdD0u4Y4EtbuBcQx1GtwkPSykB4xBRu+ZM5NapeDwTwkVQdSVNjorl1ebJalwSv0gJcSUVDZy/S45PyYVMuwvl6hdI1sFTKwnejvz8eyyxEpaAv4FZCP99BakBW7reGXUYYIHyXgsBDFOpprXd8Ka0GmgHYixugvl9WkV3DK0f4H3TG0d93QR6uY9Yp7Iyr01XVJ+Oym7YRKEzEywe3O9HzOIA5j/fh3zTg9GSpWpdXq400rxgviEpncr3YnynCzm9PjwPy9K8rfROJz5/2ZcO8uWcjxCCdPLbreVKIeKrpqBtsGtNEr8X2dFNhwLYfq8cKr";
     public Motor leftFront = null;
-    public BNO055IMU imu;
     public Motor rightFront = null;
     public Motor leftRear = null;
     public Motor rightRear = null;
     public final double ticks_in_degree = 1421.1 / 360.0 * 1.3;
     //port 2 on the thing (ic2)
-
+    RevIMU imu;
 
     double speedMultiplier = 1;
 
@@ -82,15 +95,16 @@ public class Definitions {
 
     public Definitions(HardwareMap Map) {
         //telemetry.addData("Status :", "hardware map");
-        Motor leftFront = new Motor(Map, "leftFront");
-        Motor rightFront = new Motor(Map, "rightFront");
-        Motor leftRear = new Motor(Map, "leftRear");
-        Motor rightRear = new Motor(Map, "rightRear");
+        leftFront = new Motor(Map, "leftFront");
+        rightFront = new Motor(Map, "rightFront");
+        leftRear = new Motor(Map, "leftRear");
+        rightRear = new Motor(Map, "rightRear");
+        imu = new RevIMU(hardwareMap);
+        imu.init();
 
+    }
     }
 
 
 
 
-
-}
