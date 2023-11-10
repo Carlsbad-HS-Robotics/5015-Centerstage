@@ -11,8 +11,9 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 public class Arm extends SubsystemBase {
-    private ServoEx arm1;
-    private ServoEx arm2;
+    private ServoEx wrist;
+    private ServoEx elbow0;
+    private ServoEx elbow1;
     private ServoEx claw;
     private int low;
     private int high;
@@ -21,15 +22,16 @@ public class Arm extends SubsystemBase {
     private final double MIN_ANGLE = 0;
     private final double MAX_ANGLE = 359;
     public Arm(final HardwareMap hMap, String name){
-        arm1 = new SimpleServo(hMap, "arm1",MIN_ANGLE,MAX_ANGLE, AngleUnit.DEGREES);
-        arm2 = new SimpleServo(hMap, "arm2",MIN_ANGLE,MAX_ANGLE, AngleUnit.DEGREES);
+        elbow0 = new SimpleServo(hMap, "elbow0",MIN_ANGLE,MAX_ANGLE, AngleUnit.DEGREES);
+        elbow1 = new SimpleServo(hMap, "elbow1",MIN_ANGLE,MAX_ANGLE, AngleUnit.DEGREES);
         claw = new SimpleServo(hMap, "claw",MIN_ANGLE,MAX_ANGLE, AngleUnit.DEGREES);
-        arm2.setInverted(true);
+        wrist = new SimpleServo(hMap, "wrist",MIN_ANGLE,MAX_ANGLE, AngleUnit.DEGREES);
+        elbow1.setInverted(true);
 
     }
     public void low(){
-        arm1.turnToAngle(0);
-        arm2.turnToAngle(0);
+        elbow0.turnToAngle(0);
+        elbow1.turnToAngle(0);
 
             isLow = true;
 
@@ -44,8 +46,8 @@ public class Arm extends SubsystemBase {
          isHolding = false;
     }
     public void high(){
-        arm1.turnToAngle(170);
-        arm2.turnToAngle(170);
+        elbow0.turnToAngle(170);
+        elbow1.turnToAngle(170);
             isLow = false;
 
     }

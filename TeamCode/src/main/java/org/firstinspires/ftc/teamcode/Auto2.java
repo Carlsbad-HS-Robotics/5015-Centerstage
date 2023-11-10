@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
-import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -10,8 +9,8 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
-@Autonomous(name="automode")
-public class Auto extends LinearOpMode {
+@Autonomous(name="automode1")
+public class Auto2 extends LinearOpMode {
     SampleMecanumDrive drive;
     DcMotor frontLeftMotor;
     DcMotor backLeftMotor;
@@ -26,31 +25,31 @@ public class Auto extends LinearOpMode {
         drive = new SampleMecanumDrive(hardwareMap);
         frontRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         backRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        Trajectory forward = drive.trajectoryBuilder(new Pose2d())
-                        .forward(20)
-                                .build();
-        Trajectory left = drive.trajectoryBuilder(new Pose2d())
-                .strafeLeft(10)
+        Trajectory traj1 = drive.trajectoryBuilder(new Pose2d())
+                .forward(36)
                 .build();
-        Trajectory right = drive.trajectoryBuilder(new Pose2d())
-                .strafeRight(10)
+        Trajectory traj2 = drive.trajectoryBuilder(new Pose2d())
+                .forward(48)
                 .build();
-        Trajectory backward = drive.trajectoryBuilder(new Pose2d())
-                        .back(20)
-                        .build();
-
+        Trajectory traj4 = drive.trajectoryBuilder(new Pose2d())
+                .strafeLeft(3)
+                .build();
+        Trajectory traj3 = drive.trajectoryBuilder(new Pose2d())
+                .forward(36)
+                .build();
 
         waitForStart();
         if(isStopRequested()) return;
         while(opModeIsActive()) {
             //Code goes here:
-            drive.followTrajectory(forward);
-            drive.followTrajectory(left);
-            drive.followTrajectory(forward);
-            drive.followTrajectory(right);
-            drive.followTrajectory(backward);
-
-
+            drive.followTrajectory(traj1);
+            drive.turn(90);
+            drive.followTrajectory(traj2);
+            drive.followTrajectory(traj4);
+            //put the pixel
+            drive.followTrajectory(traj3);
+            drive.turn(90);
+            //put the pixel
             break;
         }
     }
