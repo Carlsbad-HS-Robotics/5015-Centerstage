@@ -22,12 +22,9 @@ public class TeleOp1 extends LinearOpMode {
     GamepadEx driver;
     GamepadEx coDriver;
     private Arm arm_subsystem;
-    private LowCommand m_lowCommand;
-    private HighCommand m_highCommand;
-    private ReleaseCommand m_releaseCommand;
-    private GrabCommand m_grabCommand;
     private Button low_button, high_button;
-    Motor leftFront,rightFront,leftRear,rightRear;
+    Motor leftFront, rightFront, leftRear, rightRear;
+
     @Override
     public void runOpMode() throws InterruptedException {
         leftFront = new Motor(hardwareMap, "leftFront", Motor.GoBILDA.RPM_312);
@@ -40,11 +37,7 @@ public class TeleOp1 extends LinearOpMode {
 
         driver = new GamepadEx(gamepad1);
         coDriver = new GamepadEx(gamepad2);
-        arm_subsystem = new Arm(hardwareMap, "arm");
-        m_lowCommand = new LowCommand(arm_subsystem);
-        m_highCommand = new HighCommand(arm_subsystem);
-        m_grabCommand = new GrabCommand(arm_subsystem);
-        m_releaseCommand = new ReleaseCommand(arm_subsystem);
+        arm_subsystem = new Arm(hardwareMap);
         MecanumDrive drive = new MecanumDrive(
                 leftFront,
                 rightFront,
@@ -56,18 +49,27 @@ public class TeleOp1 extends LinearOpMode {
         ToggleButtonReader clawToggle = new ToggleButtonReader(
                 coDriver, GamepadKeys.Button.A
         );
+        /*
         Button claw = new GamepadButton(
                 coDriver,GamepadKeys.Button.A
         );
+
+         */
+
         ToggleButtonReader armToggle = new ToggleButtonReader(
-                coDriver,GamepadKeys.Button.B
+                coDriver, GamepadKeys.Button.B
         );
+        /*
         Button arm = new GamepadButton(
                 coDriver,GamepadKeys.Button.B
         );
+
+         */
         /*;
         TriggerReader rTrigger = new TriggerReader(
-                coDriver, GamepadKeys.Trigger.RIGHT_TRIGGER
+                coDriver, GamepadKeys.Trigger.RIGHT
+
+                eo[]\\_TRIGGER
         );
         TriggerReader lTrigger = new TriggerReader(
                 coDriver, GamepadKeys.Trigger.LEFT_TRIGGER
@@ -82,8 +84,8 @@ public class TeleOp1 extends LinearOpMode {
 */
 
         waitForStart();
-        if(isStopRequested()) return;
-        while(!isStopRequested()){
+        if (isStopRequested()) return;
+        while (opModeIsActive()) {
             drive.driveFieldCentric(
                     driver.getLeftX(),
                     driver.getLeftY(),
@@ -91,22 +93,29 @@ public class TeleOp1 extends LinearOpMode {
                     imu.getRotation2d().getDegrees(),   // gyro value passed in here must be in degrees
                     false
             );
-
-            telemetry.addData("left X",driver.getLeftX());
-            telemetry.addData("left Y", driver.getLeftY());
-            telemetry.update();
-            if(clawToggle.getState()){
-                claw.whenPressed(m_releaseCommand);
-            }else{
-                claw.whenPressed(m_grabCommand);
+            if (clawToggle.getState()) {
+                arm_subsystem.grab();
+            } else {
+                arm_subsystem.release();
             }
             if(armToggle.getState()){
-                arm.whenPressed(m_lowCommand);
+                arm_subsystem.high();
             } else{
-                arm.whenPressed(m_highCommand);
+                arm_subsystem.low();
             }
 
+                telemetry.addData("left X", driver.getLeftX());
+                telemetry.addData("left Y", driver.getLeftY());
+                telemetry.addData("a state:", clawToggle.getState());
+                telemetry.addData("b state:", armToggle.getState());
+                telemetry.addData("a:", coDriver.getButton(GamepadKeys.Button.A));
+                telemetry.addData("b:", coDriver.getButton(GamepadKeys.Button.B));
+                telemetry.update();
+                armToggle.readValue();
+                clawToggle.readValue();
 
+
+            }
         }
     }
-}
+

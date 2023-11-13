@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -9,14 +10,19 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 
-@Autonomous(name="automode1")
+@Autonomous(name="Auto")
 public class Auto extends LinearOpMode {
     SampleMecanumDrive drive;
     DcMotor frontLeftMotor;
     DcMotor backLeftMotor;
     DcMotor frontRightMotor;
     DcMotor backRightMotor;
+    enum State{
+        TRAJECTORY_1,
+        IDLE
+    }
     @Override
     public void runOpMode() throws InterruptedException {
         DcMotor frontLeftMotor = hardwareMap.dcMotor.get("leftFront");
@@ -26,62 +32,36 @@ public class Auto extends LinearOpMode {
         drive = new SampleMecanumDrive(hardwareMap);
         frontRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         backRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        Trajectory forward = drive.trajectoryBuilder(new Pose2d())
-                        .forward(20)
-                                .build();
-        Trajectory left = drive.trajectoryBuilder(new Pose2d())
-                .strafeLeft(10)
+        TrajectorySequence traj1 = drive.trajectorySequenceBuilder(new Pose2d(-36.19, -61.58, Math.toRadians(90.00)))
+                .lineTo(new Vector2d(-61.97, -61.59))
                 .build();
-        Trajectory right = drive.trajectoryBuilder(new Pose2d())
-                .strafeRight(10)
-                .build();
-        Trajectory backward = drive.trajectoryBuilder(new Pose2d())
-                        .back(20)
-                        .build();
-
-
+        drive.followTrajectorySequenceAsync(traj1);
+        State currentState = State.IDLE;
         waitForStart();
         if(isStopRequested()) return;
         while(opModeIsActive()) {
+            switch(currentState){
+                case TRAJECTORY_1:
+                    if(!drive.isBusy()){
+                        currentState = State.IDLE;
+                    }
+                    break;
+                case IDLE:
+
+                    break;
+            }
+
             //Code goes here:
-            drive.followTrajectory(forward );
-            drive.followTrajectory(left);
-            drive.followTrajectory(forward);
-            drive.followTrajectory(right);
-            drive.followTrajectory(backward);
 
 
-            break;
+
+
+            drive.update();
         }
     }
    // void forward(5000)
 
-    void left(){
-        frontRightMotor.setPower(1);
-        frontLeftMotor.setPower(-1);
-        backLeftMotor.setPower(1);
-        backRightMotor.setPower(-1);
 
-    }
-    void right(){
-        frontRightMotor.setPower(-1);
-        frontLeftMotor.setPower(1);
-        backLeftMotor.setPower(-1);
-        backRightMotor.setPower(1);
-
-    }
-    void forward(){
-        frontRightMotor.setPower(1);
-        frontLeftMotor.setPower(1);
-        backLeftMotor.setPower(1);
-        backRightMotor.setPower(1);
-    }
-    void backward(){
-        frontRightMotor.setPower(-1);
-        frontLeftMotor.setPower(-1);
-        backLeftMotor.setPower(-1);
-        backRightMotor.setPower(-1);
-    }
 
 
 
