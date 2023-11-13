@@ -7,7 +7,7 @@ import androidx.annotation.NonNull;
 
 import com.arcrobotics.ftclib.hardware.RevIMU;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
-import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.hardware.bosch.BHI260IMU;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -89,9 +89,6 @@ public class Definitions {
     final double WHEEL_DIAMETER_INCHES = 3.54331;     // For figuring circumference
     final double COUNTS_PER_INCH = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
             (WHEEL_DIAMETER_INCHES * 3.1415);
-
-
-
 
     public Definitions(HardwareMap Map) {
         //telemetry.addData("Status :", "hardware map");
