@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.drive.opmode;
+package org.firstinspires.ftc.teamcode.opmode;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
@@ -38,6 +38,7 @@ import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
  *
  * Uncomment the @Disabled tag below to use this opmode.
  */
+
 @Config
 @TeleOp(group = "drive")
 public class MotorDirectionDebugger extends LinearOpMode {
@@ -45,7 +46,7 @@ public class MotorDirectionDebugger extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+        Telemetry telemetry = new MultipleTelemetry(this.telemetry, FtcDashboard.getInstance().getTelemetry());
 
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
@@ -60,7 +61,7 @@ public class MotorDirectionDebugger extends LinearOpMode {
         telemetry.setDisplayFormat(Telemetry.DisplayFormat.HTML);
 
         while (!isStopRequested()) {
-            telemetry.addLine( "Press each button to turn on its respective motor");
+            telemetry.addLine("Press each button to turn on its respective motor");
             telemetry.addLine();
             telemetry.addLine("<font face=\"monospace\">Xbox/PS4 Button - Motor</font>");
             telemetry.addLine("<font face=\"monospace\">&nbsp;&nbsp;X / ▢&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- Front Left</font>");
@@ -87,7 +88,6 @@ public class MotorDirectionDebugger extends LinearOpMode {
             }
 
             telemetry.update();
-            System.out.println("Telemetry updated! UwU");
         }
     }
 }

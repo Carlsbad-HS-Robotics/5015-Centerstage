@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.drive.opmode;
+package org.firstinspires.ftc.teamcode.opmode;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -39,12 +39,6 @@ public class LocalizationTest extends LinearOpMode {
             telemetry.addData("x", poseEstimate.getX());
             telemetry.addData("y", poseEstimate.getY());
             telemetry.addData("heading", poseEstimate.getHeading());
-            /*
-            telemetry.addData("encoder LF", drive.leftFront.getCurrentPosition());
-            telemetry.addData("encoder RF", drive.rightFront.getCurrentPosition());
-            telemetry.addData("encoder LR", drive.leftRear.getCurrentPosition());
-            telemetry.addData("encoder RR", drive.rightRear.getCurrentPosition());
-            */
             telemetry.update();
         }
     }

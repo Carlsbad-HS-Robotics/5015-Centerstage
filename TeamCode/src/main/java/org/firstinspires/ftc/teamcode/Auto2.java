@@ -1,86 +1,107 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
+import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.pipelines.SkystoneDeterminationPipelineRed;
+import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
+import org.openftc.easyopencv.OpenCvCamera;
+import org.openftc.easyopencv.OpenCvCameraFactory;
+import org.openftc.easyopencv.OpenCvCameraRotation;
 
-@Autonomous(name="automode1")
+@Autonomous(name="AutoRedBackStage")
 public class Auto2 extends LinearOpMode {
+
     SampleMecanumDrive drive;
-    DcMotor frontLeftMotor;
-    DcMotor backLeftMotor;
-    DcMotor frontRightMotor;
-    DcMotor backRightMotor;
+    enum State{
+        TRAJECTORY_1,
+        DROP1,
+        TRAJECTORY2,
+        DROP2,
+        TRAJECTORY3,
+        IDLE
+    }
+    Arm arm_subsystem;
     @Override
     public void runOpMode() throws InterruptedException {
-        DcMotor frontLeftMotor = hardwareMap.dcMotor.get("leftFront");
-        DcMotor backLeftMotor = hardwareMap.dcMotor.get("leftRear");
-        DcMotor frontRightMotor = hardwareMap.dcMotor.get("rightFront");
-        DcMotor backRightMotor = hardwareMap.dcMotor.get("rightRear");
+        ElapsedTime timer = new ElapsedTime();
+
+
         drive = new SampleMecanumDrive(hardwareMap);
-        frontRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        backRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        Trajectory traj1 = drive.trajectoryBuilder(new Pose2d())
-                .forward(36)
+
+        Trajectory forward = drive.trajectoryBuilder(new Pose2d())
+                .back(30)
                 .build();
-        Trajectory traj2 = drive.trajectoryBuilder(new Pose2d())
-                .forward(48)
+        Trajectory backward = drive.trajectoryBuilder(new Pose2d())
+                .forward(30)
                 .build();
-        Trajectory traj4 = drive.trajectoryBuilder(new Pose2d())
-                .strafeLeft(3)
-                .build();
-        Trajectory traj3 = drive.trajectoryBuilder(new Pose2d())
-                .forward(36)
+        Trajectory right = drive.trajectoryBuilder(new Pose2d())
+                .strafeRight(24)
                 .build();
 
+
+        drive.followTrajectoryAsync(forward);
+        State currentState = State.IDLE;
         waitForStart();
+        arm_subsystem = new Arm(hardwareMap);
         if(isStopRequested()) return;
         while(opModeIsActive()) {
+            switch(currentState){
+                case TRAJECTORY_1:
+                    arm_subsystem.grab();
+                    if(!drive.isBusy()){
+                        arm_subsystem.drop();
+                        arm_subsystem.high();
+                        timer.reset();
+                        currentState = State.DROP1;
+                    }
+                    break;
+                case DROP1:
+                    if(timer.seconds() >= 2){
+
+                        drive.followTrajectoryAsync(backward);
+                        arm_subsystem.low();
+                        currentState = State.TRAJECTORY2;
+                    }
+                    break;
+                case TRAJECTORY2:
+                    if(!drive.isBusy()){
+                        drive.followTrajectoryAsync(right);
+                        arm_subsystem.grab();
+                        currentState = State.DROP2;
+                    }
+                    break;
+                case DROP2:
+                    if(!drive.isBusy()){
+                        arm_subsystem.drop();
+                        currentState = State.IDLE;
+                    }
+                    break;
+                case IDLE:
+
+                    break;
+            }
+
             //Code goes here:
-            drive.followTrajectory(traj1);
-            drive.turn(90);
-            drive.followTrajectory(traj2);
-            drive.followTrajectory(traj4);
-            //put the pixel
-            drive.followTrajectory(traj3);
-            drive.turn(90);
-            //put the pixel
-            break;
+
+
+
+
+            drive.update();
         }
     }
-   // void forward(5000)
+    // void forward(5000)
 
-    void left(){
-        frontRightMotor.setPower(1);
-        frontLeftMotor.setPower(-1);
-        backLeftMotor.setPower(1);
-        backRightMotor.setPower(-1);
 
-    }
-    void right(){
-        frontRightMotor.setPower(-1);
-        frontLeftMotor.setPower(1);
-        backLeftMotor.setPower(-1);
-        backRightMotor.setPower(1);
-
-    }
-    void forward(){
-        frontRightMotor.setPower(1);
-        frontLeftMotor.setPower(1);
-        backLeftMotor.setPower(1);
-        backRightMotor.setPower(1);
-    }
-    void backward(){
-        frontRightMotor.setPower(-1);
-        frontLeftMotor.setPower(-1);
-        backLeftMotor.setPower(-1);
-        backRightMotor.setPower(-1);
-    }
 
 
 

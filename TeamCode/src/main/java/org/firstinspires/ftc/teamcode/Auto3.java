@@ -1,25 +1,15 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
-import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
-import org.firstinspires.ftc.teamcode.pipelines.SkystoneDeterminationPipelineRed;
-import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
-import org.openftc.easyopencv.OpenCvCamera;
-import org.openftc.easyopencv.OpenCvCameraFactory;
-import org.openftc.easyopencv.OpenCvCameraRotation;
 
-@Autonomous(name="AutoBlueBackStage")
-public class Auto extends LinearOpMode {
+@Autonomous(name="AutoBlue")
+public class Auto3 extends LinearOpMode {
 
     SampleMecanumDrive drive;
     enum State{
@@ -64,9 +54,9 @@ public class Auto extends LinearOpMode {
                 case DROP1:
                     if(timer.seconds() >= 2){
 
-                        drive.followTrajectoryAsync(backward);
+
                         arm_subsystem.low();
-                        currentState = State.TRAJECTORY2;   
+                        currentState = State.IDLE;
                     }
                     break;
                 case TRAJECTORY2:
