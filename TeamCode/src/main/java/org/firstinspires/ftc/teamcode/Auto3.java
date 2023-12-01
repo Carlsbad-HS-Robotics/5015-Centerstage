@@ -8,10 +8,10 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
-@Autonomous(name="AutoBlue")
+@Autonomous(name="AutoBlue(real)")
 public class Auto3 extends LinearOpMode {
-
-    SampleMecanumDrive drive;
+    Definitions drive;
+    //SampleMecanumDrive drive;
     enum State{
         TRAJECTORY_1,
         DROP1,
@@ -24,8 +24,9 @@ public class Auto3 extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         ElapsedTime timer = new ElapsedTime();
-        drive = new SampleMecanumDrive(hardwareMap);
+        drive = new Definitions(hardwareMap);
 
+        /*
         Trajectory forward = drive.trajectoryBuilder(new Pose2d())
                 .back(30)
                 .build();
@@ -38,10 +39,27 @@ public class Auto3 extends LinearOpMode {
         drive.followTrajectoryAsync(forward);
         arm_subsystem = new Arm(hardwareMap);
         State currentState = State.IDLE;
+
+         */
         waitForStart();
+
+        drive.rightFront.set(-1);
+        drive.leftFront.set(1);
+        drive.rightRear.set(1);
+        drive.leftRear.set(-1);
+
+        sleep(1000);
+
+        drive.rightFront.set(0);
+        drive.leftFront.set(0);
+        drive.rightRear.set(0);
+        drive.leftRear.set(0);
+
         if(isStopRequested()) return;
         while(opModeIsActive()) {
-            switch(currentState){
+
+
+            /*switch(currentState){
                 case TRAJECTORY_1:
                     arm_subsystem.grab();
                     if(!drive.isBusy()){
@@ -75,14 +93,16 @@ public class Auto3 extends LinearOpMode {
                 case IDLE:
 
                     break;
-            }
+            }*/
+
+
 
             //Code goes here:
 
 
 
 
-            drive.update();
+            //drive.update();
         }
     }
    // void forward(5000)

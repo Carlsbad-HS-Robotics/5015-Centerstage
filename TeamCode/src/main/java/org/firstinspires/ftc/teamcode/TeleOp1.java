@@ -55,6 +55,7 @@ public class TeleOp1 extends LinearOpMode {
         ToggleButtonReader armToggle = new ToggleButtonReader(
                 coDriver, GamepadKeys.Button.B
         );
+
         /*
         Button arm = new GamepadButton(
                 coDriver,GamepadKeys.Button.B
@@ -122,16 +123,16 @@ public class TeleOp1 extends LinearOpMode {
             rightFront.set(frontRightPower);
             rightRear.set(backRightPower*1.2);
 
-            if (coDriver.getButton(GamepadKeys.Button.Y)) {
+            if (coDriver.getButton(GamepadKeys.Button.RIGHT_BUMPER)) {
                 arm_subsystem.grab();
-            } else if (coDriver.getButton(GamepadKeys.Button.X)){
+            } else if (coDriver.getButton(GamepadKeys.Button.LEFT_BUMPER)){
                 arm_subsystem.release();
             }
             else if(coDriver.getButton(GamepadKeys.Button.A)){
                 arm_subsystem.high();
             } else if (coDriver.getButton(GamepadKeys.Button.B)){
                 arm_subsystem.low();
-            } else if(coDriver.getButton(GamepadKeys.Button.RIGHT_BUMPER)){
+            } else if(coDriver.getButton(GamepadKeys.Button.Y)){
                 arm_subsystem.drop();
             } else if(coDriver.getButton(GamepadKeys.Button.DPAD_DOWN)){
                 arm_subsystem.hangDown();

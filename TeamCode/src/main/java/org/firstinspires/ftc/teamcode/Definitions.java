@@ -96,7 +96,7 @@ public class Definitions {
         rightFront = new Motor(Map, "rightFront");
         leftRear = new Motor(Map, "leftRear");
         rightRear = new Motor(Map, "rightRear");
-        imu = new RevIMU(hardwareMap);
+        imu = new RevIMU(Map);
         imu.init();
 
     }
