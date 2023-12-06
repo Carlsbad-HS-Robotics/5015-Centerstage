@@ -8,8 +8,10 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.pipelines.BlueDetection;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
+import org.openftc.easyopencv.OpenCvCameraRotation;
 
 @Autonomous(name="AutoBlueBackStage")
 public class Auto extends LinearOpMode {
@@ -25,11 +27,27 @@ public class Auto extends LinearOpMode {
     }
     Arm arm_subsystem;
     OpenCvCamera webcam;
+    BlueDetection.ObjectPosition position;
     @Override
     public void runOpMode() throws InterruptedException {
         int cameraMonitorViewId = hardwareMap.appContext
                 .getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
+        BlueDetection pipeline = new BlueDetection(telemetry);
+        webcam.setPipeline(pipeline);
+        webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
+            @Override
+            public void onOpened() {
+                webcam.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
+            }
+
+            @Override
+            public void onError(int errorCode) {
+
+            }
+        });
+
+
         ElapsedTime timer = new ElapsedTime();
 
         drive = new SampleMecanumDrive(hardwareMap);
@@ -46,6 +64,7 @@ public class Auto extends LinearOpMode {
         drive.followTrajectoryAsync(forward);
         arm_subsystem = new Arm(hardwareMap);
         State currentState = State.IDLE;
+        position = pipeline.getPosition();
         waitForStart();
         if(isStopRequested()) return;
         while(opModeIsActive()) {
@@ -93,7 +112,6 @@ public class Auto extends LinearOpMode {
             drive.update();
         }
     }
-   // void forward(5000)
 
 
 

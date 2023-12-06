@@ -28,7 +28,7 @@ public class TeleOp1 extends LinearOpMode {
     private Arm arm_subsystem;
     private Button low_button, high_button;
     Motor leftFront, rightFront, leftRear, rightRear;
-
+    private MecanumDrive drive;
     @Override
     public void runOpMode() throws InterruptedException {
         leftFront = new Motor(hardwareMap, "leftFront", Motor.GoBILDA.RPM_312);
@@ -85,43 +85,17 @@ public class TeleOp1 extends LinearOpMode {
         IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
                 RevHubOrientationOnRobot.LogoFacingDirection.FORWARD,
                 RevHubOrientationOnRobot.UsbFacingDirection.UP));
+        drive = new MecanumDrive(leftFront,rightFront,leftRear,rightRear);
         // Without this, the REV Hub's orientation is assumed to be logo up / USB forward
         imu.initialize(parameters);
         waitForStart();
         if (isStopRequested()) return;
         while (opModeIsActive()) {
-            double y = -gamepad1.left_stick_y; // Remember, Y stick value is reversed
-            double x = gamepad1.left_stick_x;
-            double rx = gamepad1.right_stick_x;
-
-            // This button choice was made so that it is hard to hit on accident,
-            // it can be freely changed based on preference.
-            // The equivalent button is start on Xbox-style controllers.
-            if (gamepad1.options) {
-                imu.resetYaw();
-            }
-
-            double botHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
-
-            // Rotate the movement direction counter to the bot's rotation
-            double rotX = x * Math.cos(-botHeading) - y * Math.sin(-botHeading);
-            double rotY = x * Math.sin(-botHeading) + y * Math.cos(-botHeading);
-
-            rotX = rotX * 1.1;  // Counteract imperfect strafing
-
-            // Denominator is the largest motor power (absolute value) or 1
-            // This ensures all the powers maintain the same ratio,
-            // but only if at least one is out of the range [-1, 1]
-            double denominator = Math.max(Math.abs(rotY) + Math.abs(rotX) + Math.abs(rx), 1);
-            double frontLeftPower = (rotY + rotX + rx) / denominator;
-            double backLeftPower = (rotY - rotX + rx) / denominator;
-            double frontRightPower = (rotY - rotX - rx) / denominator;
-            double backRightPower = (rotY + rotX - rx) / denominator;
-
-            leftFront.set(frontLeftPower);
-            leftRear.set(backLeftPower);
-            rightFront.set(frontRightPower);
-            rightRear.set(backRightPower*1.2);
+            drive.driveRobotCentric(
+                    driver.getLeftX(),
+                    driver.getLeftY(),
+                    driver.getRightX()
+            );
 
             if (coDriver.getButton(GamepadKeys.Button.RIGHT_BUMPER)) {
                 arm_subsystem.grab();
