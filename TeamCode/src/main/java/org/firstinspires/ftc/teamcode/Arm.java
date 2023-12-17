@@ -7,9 +7,10 @@ import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.teamcode.MotionLibrary.util.NanoClock;
+
 @Config
 public class Arm{
     private ServoEx elbow0;
@@ -19,6 +20,7 @@ public class Arm{
     private CRServo hang0;
     private CRServo hang1;
     private Motor vHang;
+    private double elbowPosition;
     private int low;
     private int high;
     private boolean isLow;
@@ -27,6 +29,7 @@ public class Arm{
     private final double MAX_ANGLE = 300;
     public static int lowAngle = 0;
     public static int highAngle = 300;
+    public NanoClock armClock;
     public Arm(final HardwareMap hMap){
         elbow0 = new SimpleServo(hMap, "elbow0",MIN_ANGLE,MAX_ANGLE, AngleUnit.DEGREES);
         elbow1 = new SimpleServo(hMap, "elbow1",MIN_ANGLE,MAX_ANGLE, AngleUnit.DEGREES);
@@ -37,38 +40,49 @@ public class Arm{
         hang1 = hMap.crservo.get("hang1");
         elbow1.setInverted(true);
         elbow0.setInverted(true);
+        wrist.setInverted(true);
         hang0.setDirection(DcMotorSimple.Direction.REVERSE);
-
-        //
+        armClock = new NanoClock();
 
     }
-    public void low(){
-        elbow0.setPosition(0);
-        elbow1.setPosition(0);
-        wrist.setPosition(0.75);
+    public void high(){
+        elbowPosition = 0;
+        wrist.setPosition(1);
             isLow = true;
 
 
     }
+
+    public void setElbowPosition(double a){
+        if(elbowPosition <=1 && elbowPosition >= 0){
+            elbowPosition = a;
+        } else if (elbowPosition > 1){
+            elbowPosition = 1;
+        } else {
+            elbowPosition = 0;
+        }
+    }
     public void grab(){
-        claw.turnToAngle(90);
+        claw.turnToAngle(20);
         isHolding = true;
     }
     public void release(){
-         claw.turnToAngle(200);
+         claw.turnToAngle(180);
          isHolding = false;
     }
-    public void high(){
-        elbow0.setPosition(1);
-        elbow1.setPosition(1);
+    public void low(){
+        wrist.setPosition(0.43);
+        elbowPosition = 1;
             isLow = false;
-            wrist.setPosition(0);
+
 
     }
     public void drop(){
-        elbow0.setPosition(0.65);
-        elbow1.setPosition(0.65);
-        wrist.setPosition(0);
+        setElbowPosition(0.55);
+        wrist.setPosition(0.43);
+    }
+    public void rotateArm(){
+
     }
     public void hangUp(){
         vHang.set(1);
@@ -89,6 +103,10 @@ public class Arm{
         hang1.setPower(0);
         vHang.set(0);
     }
+    public void update(){
+        elbow0.setPosition(elbowPosition);
+        elbow1.setPosition(elbowPosition);
+    }
     public boolean getHoldState(){
         return isHolding;
     }
@@ -104,5 +122,7 @@ public class Arm{
     public double getWristAngle(){
         return getServoPos(wrist);
     }
-
+    public double getElbowPosition(){
+        return elbowPosition;
+    }
 }

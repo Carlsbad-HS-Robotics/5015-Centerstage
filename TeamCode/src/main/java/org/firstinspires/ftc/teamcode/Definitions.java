@@ -96,6 +96,11 @@ public class Definitions {
         rightFront = new Motor(Map, "rightFront");
         leftRear = new Motor(Map, "leftRear");
         rightRear = new Motor(Map, "rightRear");
+        leftRear.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
+        rightFront.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
+        leftFront.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
+        rightRear.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
+
         imu = new RevIMU(Map);
         imu.init();
 

@@ -50,7 +50,7 @@ public class Auto4 extends LinearOpMode {
                     arm_subsystem.grab();
                     if(!drive.isBusy()){
                         arm_subsystem.drop();
-                        arm_subsystem.high();
+                        arm_subsystem.low();
                         timer.reset();
                         currentState = State.DROP1;
                     }

@@ -1,22 +1,14 @@
 package org.firstinspires.ftc.teamcode;
 
-import android.widget.ToggleButton;
-
 import com.arcrobotics.ftclib.command.button.Button;
-import com.arcrobotics.ftclib.command.button.GamepadButton;
 import com.arcrobotics.ftclib.drivebase.MecanumDrive;
-import com.arcrobotics.ftclib.gamepad.ButtonReader;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.arcrobotics.ftclib.gamepad.ToggleButtonReader;
-import com.arcrobotics.ftclib.gamepad.TriggerReader;
-import com.arcrobotics.ftclib.hardware.RevIMU;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.Gamepad;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -29,13 +21,14 @@ public class TeleOp1 extends LinearOpMode {
     private Button low_button, high_button;
     Motor leftFront, rightFront, leftRear, rightRear;
     private MecanumDrive drive;
+    private double armTimeDif = 0;
     @Override
     public void runOpMode() throws InterruptedException {
         leftFront = new Motor(hardwareMap, "leftFront", Motor.GoBILDA.RPM_312);
         rightFront = new Motor(hardwareMap, "rightFront", Motor.GoBILDA.RPM_312);
         leftRear = new Motor(hardwareMap, "leftRear", Motor.GoBILDA.RPM_312);
         rightRear = new Motor(hardwareMap, "rightRear", Motor.GoBILDA.RPM_312);
-        rightFront.setInverted(true);
+        leftFront.setInverted(true);
         leftRear.setInverted(true);
 
         driver = new GamepadEx(gamepad1);
@@ -91,11 +84,46 @@ public class TeleOp1 extends LinearOpMode {
         waitForStart();
         if (isStopRequested()) return;
         while (opModeIsActive()) {
-            drive.driveRobotCentric(
-                    driver.getLeftX(),
-                    driver.getLeftY(),
-                    driver.getRightX()
-            );
+            double y = -gamepad1.left_stick_y; // Remember, Y stick value is reversed
+            double x = gamepad1.left_stick_x * 1.1; // Counteract imperfect strafing
+            double rx = -gamepad1.right_stick_x;
+
+            double botHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
+
+
+            double rotX;
+            double rotY;
+
+            // Rotate the movement direction counter to the bot's rotation
+            if(!gamepad1.left_bumper) {
+                rotX = x * Math.cos(-botHeading) - y * Math.sin(-botHeading);
+                rotY = x * Math.sin(-botHeading) + y * Math.cos(-botHeading);
+            } else {
+                rotX = x;
+                rotY = y;
+            }
+
+            rotX = rotX * 1.1;  // Counteract imperfect strafing
+
+            // Denominator is the largest motor power (absolute value) or 1
+            // This ensures all the powers maintain the same ratio,
+            // but only if at least one is out of the range [-1, 1]
+            double denominator = Math.max(Math.abs(rotY) + Math.abs(rotX) + Math.abs(rx), 1);
+            double frontLeftPower = (rotY + rotX + rx) / denominator;
+            double backLeftPower = (rotY - rotX + rx) / denominator;
+            double frontRightPower = (rotY - rotX - rx) / denominator;
+            double backRightPower = (rotY + rotX - rx) / denominator;
+
+            double multiplier = 1-gamepad1.right_trigger*0.75;
+
+            armTimeDif = arm_subsystem.armClock.nanoLifespan();
+            arm_subsystem.armClock.reset();
+
+            leftFront.set(frontLeftPower*multiplier);
+            leftRear.set(backLeftPower*multiplier);
+            rightFront.set(frontRightPower*multiplier);
+            rightRear.set(backRightPower*multiplier);
+            arm_subsystem.setElbowPosition(arm_subsystem.getElbowPosition()+coDriver.getRightY()*0.0000000003*armTimeDif);
 
             if (coDriver.getButton(GamepadKeys.Button.RIGHT_BUMPER)) {
                 arm_subsystem.grab();
@@ -103,9 +131,9 @@ public class TeleOp1 extends LinearOpMode {
                 arm_subsystem.release();
             }
             else if(coDriver.getButton(GamepadKeys.Button.A)){
-                arm_subsystem.high();
-            } else if (coDriver.getButton(GamepadKeys.Button.B)){
                 arm_subsystem.low();
+            } else if (coDriver.getButton(GamepadKeys.Button.B)){
+                arm_subsystem.high();
             } else if(coDriver.getButton(GamepadKeys.Button.Y)){
                 arm_subsystem.drop();
             } else if(coDriver.getButton(GamepadKeys.Button.DPAD_DOWN)){
@@ -125,17 +153,20 @@ public class TeleOp1 extends LinearOpMode {
                 imu.resetYaw();
             }
 
-                telemetry.addData("left X", driver.getLeftX());
-                telemetry.addData("left Y", driver.getLeftY());
-                telemetry.addData("a state:", clawToggle.getState());
-                telemetry.addData("b state:", armToggle.getState());
-                telemetry.addData("a:", coDriver.getButton(GamepadKeys.Button.A));
-                telemetry.addData("b:", coDriver.getButton(GamepadKeys.Button.B));
-                telemetry.addData("elbow anlge", arm_subsystem.getElbowAngle());
-                telemetry.addData("wrist angle,", arm_subsystem.getWristAngle());
-                telemetry.update();
-                armToggle.readValue();
-                clawToggle.readValue();
+
+            telemetry.addData("left X", driver.getLeftX());
+            telemetry.addData("left Y", driver.getLeftY());
+            telemetry.addData("a state:", clawToggle.getState());
+            telemetry.addData("b state:", armToggle.getState());
+            telemetry.addData("a:", coDriver.getButton(GamepadKeys.Button.A));
+            telemetry.addData("b:", coDriver.getButton(GamepadKeys.Button.B));
+            telemetry.addData("elbow anlge", arm_subsystem.getElbowAngle());
+            telemetry.addData("wrist angle,", arm_subsystem.getWristAngle());
+            telemetry.addData("elbow Position", arm_subsystem.getElbowPosition());
+            telemetry.update();
+            armToggle.readValue();
+            clawToggle.readValue();
+            arm_subsystem.update();
 
 
             }

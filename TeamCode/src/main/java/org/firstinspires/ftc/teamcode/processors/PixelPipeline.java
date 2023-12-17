@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.pipelines;
+package org.firstinspires.ftc.teamcode.processors;
 
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
@@ -13,7 +13,7 @@ import java.util.List;
 
 public class PixelPipeline extends OpenCvPipeline {
     public static final Scalar
-    lowerRange = new Scalar(200,200,200,200),
+    lowerRange = new Scalar(200,200,200,255),
     upperRange = new Scalar(255,255,255,255);
     @Override
     public Mat processFrame(Mat input) {

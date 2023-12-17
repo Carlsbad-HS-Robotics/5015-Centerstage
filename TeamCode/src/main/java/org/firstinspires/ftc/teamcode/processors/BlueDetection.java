@@ -1,4 +1,6 @@
-package org.firstinspires.ftc.teamcode.pipelines;
+package org.firstinspires.ftc.teamcode.processors;
+
+import android.graphics.ColorSpace;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.opencv.core.Core;
@@ -25,21 +27,21 @@ public class BlueDetection extends OpenCvPipeline {
     }
 
     // TOPLEFT anchor point for the bounding box
-    static final Point REGION1_TOPLEFT_ANCHOR_POINT = new Point(109,98);
-    static final Point REGION2_TOPLEFT_ANCHOR_POINT = new Point(181,98);
-    static final Point REGION3_TOPLEFT_ANCHOR_POINT = new Point(253,98);
+    static final Point REGION1_TOPLEFT_ANCHOR_POINT = new Point(19,188);
+    static final Point REGION2_TOPLEFT_ANCHOR_POINT = new Point(210,188);
+    static final Point REGION3_TOPLEFT_ANCHOR_POINT = new Point(520,188);
     static final int REGION_WIDTH = 20;
     static final int REGION_HEIGHT = 20;
 
     // Lower and upper boundaries for colors
     private static final Scalar
-            lower_blue_bounds = new Scalar(0, 0, 125, 255),
-            upper_red_bounds = new Scalar(120, 120, 255, 255);
+            lower_blue_bounds = new Scalar(110,50,50),
+            upper_red_bounds = new Scalar(130,255,255);
 
     // Color definitions
     private final Scalar
-            BLUE = new Scalar(0, 0, 255),
-    WHITE = new Scalar(255,255,255);
+            BLUE = new Scalar(240, 100, 100),
+            WHITE = new Scalar(0, 0, 100);
 
 
     // Percent and mat definitions
@@ -73,15 +75,17 @@ public class BlueDetection extends OpenCvPipeline {
             REGION3_TOPLEFT_ANCHOR_POINT.x + REGION_WIDTH,
             REGION3_TOPLEFT_ANCHOR_POINT.y + REGION_HEIGHT);
     // Running variable storing the parking position
-    public ObjectPosition position = ObjectPosition.CENTER ;
+    public volatile ObjectPosition position;
     private Telemetry telemetry;
     public void telemetry_added(){
 
+        /*
         telemetry.addData("[Pattern]", position);
-        telemetry.addData("[yelPercent]", leftPercent);
-        telemetry.addData("[cyaPercent]", rightPercent);
-        telemetry.addData("[magPercent]", midPercent);
+        telemetry.addData("[leftPercent]", leftPercent);
+        telemetry.addData("[rightPercent]", rightPercent);
+        telemetry.addData("[midPercent]", midPercent);
         telemetry.update();
+         */
     }
     public BlueDetection(Telemetry telemetry) {
         this.telemetry = telemetry;
@@ -89,6 +93,7 @@ public class BlueDetection extends OpenCvPipeline {
     @Override
     public Mat processFrame(Mat input) {
         // Noise reduction
+        Imgproc.cvtColor(input,input,Imgproc.COLOR_RGB2HSV );
         Imgproc.blur(input, blurredMat, new Size(5, 5));
         blurredMat1 = blurredMat.submat(new Rect(region1_pointA, region1_pointB));
         blurredMat2 = blurredMat.submat(new Rect(region2_pointA, region2_pointB));
@@ -211,6 +216,9 @@ public class BlueDetection extends OpenCvPipeline {
         leftMat.release();
         rightMat.release();
         midMat.release();
+        blurredMat1.release();
+        blurredMat2.release();
+        blurredMat3.release();
         kernel.release();
         telemetry_added();
         return input;

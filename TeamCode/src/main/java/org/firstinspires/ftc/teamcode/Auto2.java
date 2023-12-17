@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
-@Autonomous(name="AutoRedBackStage")
+@Autonomous(name="FakeAutoRedBackStage")
 public class Auto2 extends LinearOpMode {
 
     SampleMecanumDrive drive;
@@ -50,7 +50,7 @@ public class Auto2 extends LinearOpMode {
                     arm_subsystem.grab();
                     if(!drive.isBusy()){
                         arm_subsystem.drop();
-                        arm_subsystem.high();
+                        arm_subsystem.low();
                         timer.reset();
                         currentState = State.DROP1;
                     }
