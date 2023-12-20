@@ -18,8 +18,8 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 
 import java.util.List;
 
-@Autonomous(name="AutoFar")
-public class FarAuto extends LinearOpMode {
+@Autonomous(name="AutoFarBlue")
+public class FarAutoBlue extends LinearOpMode {
 
     SampleMecanumDrive drive;
     enum State{

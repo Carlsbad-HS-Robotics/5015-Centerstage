@@ -25,16 +25,16 @@ public class RedDetection extends OpenCvPipeline {
     }
 
     // TOPLEFT anchor point for the bounding box
-    static final Point REGION1_TOPLEFT_ANCHOR_POINT = new Point(109,98);
-    static final Point REGION2_TOPLEFT_ANCHOR_POINT = new Point(181,98);
-    static final Point REGION3_TOPLEFT_ANCHOR_POINT = new Point(253,98);
+    static final Point REGION1_TOPLEFT_ANCHOR_POINT = new Point(19,188);
+    static final Point REGION2_TOPLEFT_ANCHOR_POINT = new Point(210,188);
+    static final Point REGION3_TOPLEFT_ANCHOR_POINT = new Point(520,188);
     static final int REGION_WIDTH = 20;
     static final int REGION_HEIGHT = 20;
 
     // Lower and upper boundaries for colors
     private static final Scalar
-            lower_red_bounds = new Scalar(125, 0, 0, 255),
-            upper_red_bounds = new Scalar(255, 120, 120, 255);
+            lower_red_bounds = new Scalar(125,0,0,255),
+            upper_red_bounds = new Scalar(255,120,120,255);
 
     // Color definitions
     private final Scalar
@@ -64,16 +64,16 @@ public class RedDetection extends OpenCvPipeline {
             REGION2_TOPLEFT_ANCHOR_POINT.x,
             REGION2_TOPLEFT_ANCHOR_POINT.y);
     Point region2_pointB = new Point(
-            REGION2_TOPLEFT_ANCHOR_POINT.x + REGION_WIDTH,
+            REGION2_TOPLEFT_ANCHOR_POINT.x + REGION_WIDTH+30,
             REGION2_TOPLEFT_ANCHOR_POINT.y + REGION_HEIGHT);
     Point region3_pointA = new Point(
             REGION3_TOPLEFT_ANCHOR_POINT.x,
             REGION3_TOPLEFT_ANCHOR_POINT.y);
     Point region3_pointB = new Point(
-            REGION3_TOPLEFT_ANCHOR_POINT.x + REGION_WIDTH,
+            REGION3_TOPLEFT_ANCHOR_POINT.x + REGION_WIDTH+30,
             REGION3_TOPLEFT_ANCHOR_POINT.y + REGION_HEIGHT);
     // Running variable storing the parking position
-    public ObjectPosition position = ObjectPosition.CENTER ;
+    public volatile ObjectPosition position = ObjectPosition.CENTER ;
     private Telemetry telemetry;
     public void telemetry_added(){
 
@@ -113,7 +113,7 @@ public class RedDetection extends OpenCvPipeline {
 
         // Checks all percentages, will highlight bounding box in camera preview
         // based on what color is being detected
-        if (maxPercent == 0) {
+        if (maxPercent <= 200) {
             position = ObjectPosition.LEFT;
             Imgproc.rectangle(
                     input,
@@ -208,6 +208,9 @@ public class RedDetection extends OpenCvPipeline {
 
         // Memory cleanup
         blurredMat.release();
+        blurredMat1.release();
+        blurredMat2.release();
+        blurredMat3.release();
         leftMat.release();
         rightMat.release();
         midMat.release();

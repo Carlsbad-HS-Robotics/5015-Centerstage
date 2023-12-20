@@ -19,8 +19,8 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 
 import java.util.List;
 
-@Autonomous(name="AutoRedBackstage")
-public class AutoRedBackstage extends LinearOpMode {
+@Autonomous(name="FarAutoRed")
+public class FarAutoRed extends LinearOpMode {
 
     SampleMecanumDrive drive;
     enum State{
@@ -68,10 +68,10 @@ public class AutoRedBackstage extends LinearOpMode {
         drive = new SampleMecanumDrive(hardwareMap);
 
         Trajectory forward = drive.trajectoryBuilder(new Pose2d())
-                .forward(35)
+                .forward(32)
                 .build();
         Trajectory right = drive.trajectoryBuilder(new Pose2d())
-                .forward(25)
+                .forward(33)
                 .build();
         Trajectory left = drive.trajectoryBuilder(new Pose2d())
                 .forward(38)
@@ -112,17 +112,13 @@ public class AutoRedBackstage extends LinearOpMode {
 
                     sleep(500);
 
-                    drive.followTrajectory(drive.trajectoryBuilder(new Pose2d())
-                            .forward(5)
-                            .build());
-
-                    sleep(500);
-
                     drive.followTrajectory(left);
 
                     turnLeft();
 
                     sleep(1000);
+
+                    stopMoving();
 
                     stopMoving();
 
@@ -139,30 +135,9 @@ public class AutoRedBackstage extends LinearOpMode {
                     arm_subsystem.high();
                     arm_subsystem.update();
 
-                    sleep(2000);
+                    sleep(1000);
 
                     arm_subsystem.grab();
-
-                    //Go to wall
-
-                    turnRight();
-
-                    sleep(2000);
-
-                    stopMoving();
-
-                    sleep(500);
-
-                    drive.followTrajectory(drive.trajectoryBuilder(new Pose2d())
-                            .forward(56)
-                            .build());
-
-                    drive.followTrajectory(drive.trajectoryBuilder(new Pose2d())
-                            .strafeLeft(15)
-                            .build());
-
-
-                    dropOnBoard();
                     break;
                 case RIGHT:
                     arm_subsystem.grab();
@@ -190,38 +165,9 @@ public class AutoRedBackstage extends LinearOpMode {
                     arm_subsystem.high();
                     arm_subsystem.update();
 
-                    sleep(1500);
+                    sleep(1000);
 
                     arm_subsystem.grab();
-
-                    sleep(500);
-
-                    //Go to wall
-
-                    turnRight();
-
-                    sleep(500);
-
-                    stopMoving();
-
-                    drive.followTrajectory(drive.trajectoryBuilder(new Pose2d())
-                            .strafeRight(30)
-                            .build());
-
-                    drive.followTrajectory(drive.trajectoryBuilder(new Pose2d())
-                            .forward(30)
-                            .build());
-
-                    drive.followTrajectory(drive.trajectoryBuilder(new Pose2d())
-                            .strafeLeft(24)
-                            .build());
-
-                    drive.followTrajectory(drive.trajectoryBuilder(new Pose2d())
-                            .forward(30)
-                            .build());
-
-                    dropOnBoard();
-
                     break;
                 case CENTER:
                     arm_subsystem.grab();
@@ -231,7 +177,7 @@ public class AutoRedBackstage extends LinearOpMode {
                     drive.followTrajectory(forward);
 
                     drive.followTrajectory(drive.trajectoryBuilder(new Pose2d())
-                            .strafeRight(12)
+                            .strafeLeft(18)
                             .build());
 
                     arm_subsystem.low();
@@ -247,32 +193,9 @@ public class AutoRedBackstage extends LinearOpMode {
                     arm_subsystem.high();
                     arm_subsystem.update();
 
-                    sleep(1500);
-
-                    arm_subsystem.grab();
-
-                    sleep(500);
-
-                    drive.followTrajectory(drive.trajectoryBuilder(new Pose2d())
-                            .back(12)
-                            .build());
-
-                    turnRight();
-
                     sleep(1000);
 
-                    stopMoving();
-
-                    drive.followTrajectory(drive.trajectoryBuilder(new Pose2d())
-                            .forward(60)
-                            .build());
-
-                    drive.followTrajectory(drive.trajectoryBuilder(new Pose2d())
-                            .strafeLeft(18)
-                            .build());
-
-                   dropOnBoard();
-
+                    arm_subsystem.grab();
                     break;
             }
             telemetry.addData("drive", drive.isBusy());
@@ -316,21 +239,6 @@ public class AutoRedBackstage extends LinearOpMode {
         drive.rightRear.setPower(0);
     }
 
-    public void dropOnBoard() {
-        arm_subsystem.drop();
-        arm_subsystem.update();
-
-        sleep(2000);
-
-        arm_subsystem.release();
-
-        sleep(2000);
-
-        arm_subsystem.high();
-        arm_subsystem.update();
-
-        sleep(2000);
-    }
 
 
 }

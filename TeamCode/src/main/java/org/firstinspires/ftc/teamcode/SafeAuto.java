@@ -99,7 +99,7 @@ public class SafeAuto extends LinearOpMode {
             //myAprilTagDetections = aprilTag.getDetections();
             drive.setMotorPowers(1,1,1,1);
 
-            sleep(2000);
+            sleep(500);
 
             drive.setMotorPowers(0,0,0,0);
 

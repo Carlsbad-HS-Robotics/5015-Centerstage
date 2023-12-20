@@ -169,7 +169,7 @@ public class AutoBlueBackstage extends LinearOpMode {
 
                     turnRight();
 
-                    sleep(500);
+                    sleep(600);
 
                     stopMoving();
 
@@ -205,7 +205,7 @@ public class AutoBlueBackstage extends LinearOpMode {
                             .build());
 
                     drive.followTrajectory(drive.trajectoryBuilder(new Pose2d())
-                            .strafeRight(45)
+                            .strafeRight(30)
                             .build());
 
                     dropOnBoard();
