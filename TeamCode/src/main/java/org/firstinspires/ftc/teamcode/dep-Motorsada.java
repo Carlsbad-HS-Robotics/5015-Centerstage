@@ -10,7 +10,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import java.util.List;
-
+@dissable
 @Autonomous(name="😂😎")
 public class Motorsada extends LinearOpMode {
 

@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
-
+@dissable
 @Autonomous(name="AutoBlue(real)")
 public class Auto3 extends LinearOpMode {
     Definitions drive;

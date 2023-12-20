@@ -7,9 +7,9 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
-
-@Autonomous(name="FakeAutoRedBackStage")
-public class Auto2 extends LinearOpMode {
+@dissable
+@Autonomous(name="AutoRed")
+public class Auto4 extends LinearOpMode {
 
     SampleMecanumDrive drive;
     enum State{
@@ -58,9 +58,9 @@ public class Auto2 extends LinearOpMode {
                 case DROP1:
                     if(timer.seconds() >= 2){
 
-                        drive.followTrajectoryAsync(backward);
+
                         arm_subsystem.low();
-                        currentState = State.TRAJECTORY2;
+                        currentState = State.IDLE;
                     }
                     break;
                 case TRAJECTORY2:

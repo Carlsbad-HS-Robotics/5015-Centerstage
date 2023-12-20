@@ -17,9 +17,9 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 
 import java.util.List;
-
-@Autonomous(name="AutoFarBlue")
-public class FarAutoBlue extends LinearOpMode {
+@dissable
+@Autonomous(name="AutoSafe")
+public class SafeAuto extends LinearOpMode {
 
     SampleMecanumDrive drive;
     enum State{
@@ -92,107 +92,17 @@ public class FarAutoBlue extends LinearOpMode {
         //initAprilTag();
         waitForStart();
 
-        position = pipeline.getPosition();
+        //position = pipeline.getPosition();
 
         if(isStopRequested()) return;
         if(opModeIsActive()) {
             //myAprilTagDetections = aprilTag.getDetections();
-            arm_subsystem.grab();
+            drive.setMotorPowers(1,1,1,1);
 
-            telemetry.addData("drive", drive.isBusy());
-            telemetry.addData("state", currentState);
-            telemetry.addData("imu", Math.toDegrees(drive.getExternalHeading()));
-            telemetry.addData("pos", position);
-            telemetry.update();
+            sleep(500);
 
-            switch(position){
-                case LEFT:
-                    arm_subsystem.grab();
+            drive.setMotorPowers(0,0,0,0);
 
-                    sleep(500);
-
-                    drive.followTrajectory(left);
-
-                    turnLeft();
-
-                    sleep(1000);
-
-                    stopMoving();
-
-                    stopMoving();
-
-                    arm_subsystem.low();
-                    arm_subsystem.update();
-
-                    sleep(1000);
-
-                    arm_subsystem.release();
-                    arm_subsystem.update();
-
-                    sleep(2000);
-
-                    arm_subsystem.high();
-                    arm_subsystem.update();
-
-                    sleep(1000);
-
-                    arm_subsystem.grab();
-                    break;
-                case RIGHT:
-                    arm_subsystem.grab();
-
-                    sleep(500);
-
-                    drive.followTrajectory(right);
-
-                    turnRight();
-
-                    sleep(500);
-
-                    stopMoving();
-
-                    arm_subsystem.low();
-                    arm_subsystem.update();
-
-                    sleep(1000);
-
-                    arm_subsystem.release();
-                    arm_subsystem.update();
-
-                    sleep(2000);
-
-                    arm_subsystem.high();
-                    arm_subsystem.update();
-
-                    sleep(1000);
-
-                    arm_subsystem.grab();
-                    break;
-                case CENTER:
-                    arm_subsystem.grab();
-
-                    sleep(500);
-
-                    drive.followTrajectory(forward);
-
-                    arm_subsystem.low();
-                    arm_subsystem.update();
-
-                    sleep(1000);
-
-                    arm_subsystem.release();
-                    arm_subsystem.update();
-
-                    sleep(2000);
-
-                    arm_subsystem.high();
-                    arm_subsystem.update();
-
-                    sleep(1000);
-
-                    arm_subsystem.grab();
-                    break;
-            }
             telemetry.addData("drive", drive.isBusy());
             telemetry.addData("state", currentState);
             telemetry.addData("imu", Math.toDegrees(drive.getExternalHeading()));
