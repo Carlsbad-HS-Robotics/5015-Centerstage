@@ -1,6 +1,7 @@
-/*TODO: add arm_subsystem into a conditional list
- * 
- */
+package org.firstinspires.ftc.teamcode;
+
+import CuttleEncoder;
+import CuttleMotor  ;
 
 CuttleEncoder leftEncoder ;
 CuttleEncoder sideEncoder ;
@@ -13,10 +14,14 @@ public CuttleMotor leftBackMotor  ;
 
 MecanumController chassis;
 
+/*TODO: add arm_subsystem into a conditional list
+ *      import hell :(
+ */
+
 @Autonomous(name="AutoRedBackstage", group="Centerstage")
 public class cuttleAuto extends InitializedOpmode{
 
-    PTPController ptpController
+    PTPController ptpController;
 
     public final static double mm_per_inch = 25.4;
 
@@ -55,7 +60,7 @@ public class cuttleAuto extends InitializedOpmode{
         );
 
         //PID
-        ptpController = new PTPController(chassis, encoderLocalizer)
+        ptpController = new PTPController(chassis, encoderLocalizer);
 
         ptpController.setTranslational_PD_ctrlr(new PID(
             translation_p_gain,
@@ -91,8 +96,7 @@ public class cuttleAuto extends InitializedOpmode{
         ptpController.getAntistallParams().setMoveSpeedAntistallThreshold(0.015);  // Maximum speed in m/s for the bot to be considered stalled
         ptpController.getAntistallParams().setRotateSpeedAntistallThreshold(0.3); // Maximum rotation speed in rad/s for the bot to be considered stalled
     }
-
-    public void main{
+        public void BackstageRed() {
         super.main();
 
         TaskList autoList = new TaskList();
@@ -108,6 +112,7 @@ public class cuttleAuto extends InitializedOpmode{
                             0.5
                         ),
                         ptpController
+                    ));
 
                     arm_subsystem.low();
                     arm_subsystem.update();
@@ -117,11 +122,9 @@ public class cuttleAuto extends InitializedOpmode{
                     arm_subsystem.release();
                     arm_subsystem.update();
                 
-                    ));
-            }
-        }))
+            };
+            
+        }));
 
         queue.addTask(autoList);
-
-    }
-}
+}}
