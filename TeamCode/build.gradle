@@ -33,5 +33,5 @@ dependencies {
     implementation 'org.ftclib.ftclib:core:2.1.1' // core
     implementation 'org.openftc:opencv-repackaged-bundled-dylibs:4.7.0-A'
     implementation 'org.openftc:easyopencv:1.7.0'
-
+    implementation 'com.roboctopi:Cuttlefish:1.0.0'
 }
