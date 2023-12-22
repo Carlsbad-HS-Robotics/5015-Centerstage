@@ -1,5 +1,16 @@
 package org.firstinspires.ftc.teamcode;
 
+//cv imports
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.processors.RedDetection;
+import org.firstinspires.ftc.vision.VisionPortal;
+import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
+import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
+import org.openftc.easyopencv.OpenCvCamera;
+import org.openftc.easyopencv.OpenCvCameraFactory;
+import org.openftc.easyopencv.OpenCvCameraRotation;
+
 import CuttleEncoder;
 import CuttleMotor  ;
 
@@ -39,15 +50,15 @@ public class cuttleAuto extends InitializedOpmode{
 
         chassis = new MecanumController(
             rightFrontMotor,
-            rightBackMotor,
-            leftFrontMotor,
+            rightBackMotor ,
+            leftFrontMotor ,
             leftBackMotor
         );
 
         //Encoder
-        leftEncoder  = expHub .getEncoder(3,720*4);
-        sideEncoder  = ctrlHub.getEncoder(0,720*4);
-        rightEncoder = ctrlHub.getEncoder(3,720*4);
+        leftEncoder  = expHub .getEncoder(3,720*4) ;
+        sideEncoder  = ctrlHub.getEncoder(0,720*4) ;
+        rightEncoder = ctrlHub.getEncoder(3,720*4) ;
         leftEncoder.setDirection(Direction.REVERSE);
 
         encoderLocalizer = new ThreeEncoderLocalizer(
@@ -121,8 +132,20 @@ public class cuttleAuto extends InitializedOpmode{
 
                     arm_subsystem.release();
                     arm_subsystem.update();
-                
-            };
+                    break;
+                case RIGHT:
+                    arm_subsystem.grab();
+                    queue.addTask(new DelayTask(500));
+
+                    auto.addTask(new PointTask(
+                        new Waypoint(
+                            new Pose(32*mm_per_inch, 0, Math.PI/2),
+                            .5
+                        ),
+                        ptpController
+                    ));
+            }
+
             
         }));
 
