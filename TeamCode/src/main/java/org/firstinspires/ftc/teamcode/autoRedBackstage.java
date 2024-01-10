@@ -30,11 +30,11 @@ import java.util.List;
 
 
 /*TODO: add arm_subsystem into a conditional list
- *      import hell :(
+ *      update encoder ticks for sebby
  */
 
-@Autonomous(name="AutoRedBackstage", group="Centerstage")
-public class autoRedBackstage {
+@Autonomous(name = "Red Backstage")
+public class autoRedBackstage extends LinearOpMode {
     Arm arm_subsystem = new Arm(hardwareMap);
     CuttleRevHub controlHub = new CuttleRevHub(hardwareMap,CuttleRevHub.HubTypes.CONTROL_HUB);
     CuttleRevHub expansionHub = new CuttleRevHub(hardwareMap,CuttleRevHub.HubTypes.EXPANSION_HUB);
@@ -47,15 +47,17 @@ public class autoRedBackstage {
     public CuttleMotor rightFrontMotor;
     public CuttleMotor rightBackMotor ;
     public CuttleMotor leftBackMotor  ;
-
+    TaskList autoList = new TaskList();
+    TaskQueue queue = new TaskQueue();
     MecanumController chassis;
     PTPController ptpController;
     OpenCvCamera webcam;
-    volatile RedDetection.ObjectPosition position;
+    RedDetection.ObjectPosition position = RedDetection.ObjectPosition.LEFT;
     List<AprilTagDetection> myAprilTagDetections;
     private AprilTagProcessor aprilTag;
     private VisionPortal visionPortal;
     private int DESIRED_TAG_ID = 1;
+    private int Encoder_Ticks = 560;
 
     public final static double mm_per_inch = 25.4;
 
@@ -63,10 +65,10 @@ public class autoRedBackstage {
     {
 
         //Drive Train
-        leftFrontMotor  = controlHub.getMotor(1);
-        rightFrontMotor = controlHub.getMotor(2);
-        rightBackMotor  = controlHub.getMotor(3);
-        leftBackMotor   = controlHub.getMotor(4);
+        leftFrontMotor  = controlHub.getMotor(0);
+        rightFrontMotor = controlHub.getMotor(1);
+        rightBackMotor  = controlHub.getMotor(2);
+        leftBackMotor   = controlHub.getMotor(3);
 
         leftBackMotor .setDirection(Direction.REVERSE);
         leftFrontMotor.setDirection(Direction.REVERSE);
@@ -79,10 +81,10 @@ public class autoRedBackstage {
         );
 
         //Encoder
-        LFEncoder = controlHub.getEncoder(1, 720*4);
-        LBEncoder = controlHub.getEncoder(2, 720*4);
-        RFEncoder = controlHub.getEncoder(3, 720*4);
-        RBEncoder = controlHub.getEncoder(4, 720*4);
+        LFEncoder = controlHub.getEncoder(1, Encoder_Ticks);
+        LBEncoder = controlHub.getEncoder(2, Encoder_Ticks);
+        RFEncoder = controlHub.getEncoder(3, Encoder_Ticks);
+        RBEncoder = controlHub.getEncoder(4, Encoder_Ticks);
 
         LBEncoder.setDirection(Direction.REVERSE);
         LFEncoder.setDirection(Direction.REVERSE);
@@ -125,50 +127,43 @@ public class autoRedBackstage {
         ptpController.getAntistallParams().setMoveSpeedAntistallThreshold(0.015);  // Maximum speed in m/s for the bot to be considered stalled
         ptpController.getAntistallParams().setRotateSpeedAntistallThreshold(0.3); // Maximum rotation speed in rad/s for the bot to be considered stalled
     }
-        public void main() {
+    public void runOpMode() {
+        queue.addTask(new CustomTask(() -> {
+            switch (position) {
+                case LEFT:
+                    arm_subsystem.grab();
+                    autoList.addTask(new DelayTask(500));
 
-            TaskList autoList = new TaskList();
-            TaskQueue queue = new TaskQueue();
+                    autoList.addTask(new PointTask(
+                            new Waypoint(
+                                    new Pose(32 * mm_per_inch, 0, Math.PI / 2),
+                                    0.5
+                            ),
+                            ptpController
+                    ));
 
-            queue.addTask(new CustomTask(() -> {
-                switch (position) {
-                    case LEFT:
-                        arm_subsystem.grab();
-                        autoList.addTask(new DelayTask(500));
+                    arm_subsystem.low();
+                    arm_subsystem.update();
 
-                        autoList.addTask(new PointTask(
-                                new Waypoint(
-                                        new Pose(32 * mm_per_inch, 0, Math.PI / 2),
-                                        0.5
-                                ),
-                                ptpController
-                        ));
+                    autoList.addTask(new DelayTask(1000));
 
-                        arm_subsystem.low();
-                        arm_subsystem.update();
+                    arm_subsystem.release();
+                    arm_subsystem.update();
+                    break;
+                case RIGHT:
+                    arm_subsystem.grab();
+                    queue.addTask(new DelayTask(500));
 
-                        autoList.addTask(new DelayTask(1000));
-
-                        arm_subsystem.release();
-                        arm_subsystem.update();
-                        break;
-                    case RIGHT:
-                        arm_subsystem.grab();
-                        queue.addTask(new DelayTask(500));
-
-                        autoList.addTask(new PointTask(
-                                new Waypoint(
-                                        new Pose(32 * mm_per_inch, 0, Math.PI / 2),
-                                        .5
-                                ),
-                                ptpController
-                        ));
-                        break;
-                }
-
-                return null;
+                    autoList.addTask(new PointTask(
+                            new Waypoint(
+                                    new Pose(32 * mm_per_inch, 0, Math.PI / 2),
+                                    .5
+                            ),
+                            ptpController
+                    ));
+                    break;
             }
-            ));
-
-            queue.addTask(autoList);
-    }}
+            return null;
+        }));
+    }
+}
