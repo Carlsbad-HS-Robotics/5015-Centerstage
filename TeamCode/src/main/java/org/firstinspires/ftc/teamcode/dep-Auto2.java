@@ -46,7 +46,8 @@ public class Auto2 extends LinearOpMode {
         while(opModeIsActive()) {
             switch(currentState){
                 case TRAJECTORY_1:
-                    arm_subsystem.grab();
+                    arm_subsystem.grabLeft();
+                    arm_subsystem.grabRight();
                     if(!drive.isBusy()){
                         arm_subsystem.drop();
                         arm_subsystem.low();
@@ -65,7 +66,7 @@ public class Auto2 extends LinearOpMode {
                 case TRAJECTORY2:
                     if(!drive.isBusy()){
                         drive.followTrajectoryAsync(right);
-                        arm_subsystem.grab();
+                        arm_subsystem.grabRight();
                         currentState = State.DROP2;
                     }
                     break;

@@ -81,7 +81,7 @@ public class FarAutoRed extends LinearOpMode {
         State currentState = State.TRAJECTORY_1;
 
 
-        arm_subsystem.grab();
+        arm_subsystem.grabLeft();
 
         sleep(3000);
 
@@ -98,7 +98,7 @@ public class FarAutoRed extends LinearOpMode {
         if(isStopRequested()) return;
         if(opModeIsActive()) {
             //myAprilTagDetections = aprilTag.getDetections();
-            arm_subsystem.grab();
+            arm_subsystem.grabLeft();
 
             telemetry.addData("drive", drive.isBusy());
             telemetry.addData("state", currentState);
@@ -108,7 +108,7 @@ public class FarAutoRed extends LinearOpMode {
 
             switch(position){
                 case LEFT:
-                    arm_subsystem.grab();
+                    arm_subsystem.grabLeft();
 
                     sleep(500);
 
@@ -127,7 +127,7 @@ public class FarAutoRed extends LinearOpMode {
 
                     sleep(1000);
 
-                    arm_subsystem.release();
+                    arm_subsystem.releaseLeft();
                     arm_subsystem.update();
 
                     sleep(2000);
@@ -137,10 +137,10 @@ public class FarAutoRed extends LinearOpMode {
 
                     sleep(1000);
 
-                    arm_subsystem.grab();
+                    arm_subsystem.grabLeft();
                     break;
                 case RIGHT:
-                    arm_subsystem.grab();
+                    arm_subsystem.grabLeft();
 
                     sleep(500);
 
@@ -157,7 +157,7 @@ public class FarAutoRed extends LinearOpMode {
 
                     sleep(1000);
 
-                    arm_subsystem.release();
+                    arm_subsystem.releaseLeft();
                     arm_subsystem.update();
 
                     sleep(2000);
@@ -167,10 +167,10 @@ public class FarAutoRed extends LinearOpMode {
 
                     sleep(1000);
 
-                    arm_subsystem.grab();
+                    arm_subsystem.grabLeft();
                     break;
                 case CENTER:
-                    arm_subsystem.grab();
+                    arm_subsystem.grabLeft();
 
                     sleep(500);
 
@@ -185,7 +185,7 @@ public class FarAutoRed extends LinearOpMode {
 
                     sleep(1000);
 
-                    arm_subsystem.release();
+                    arm_subsystem.releaseLeft();
                     arm_subsystem.update();
 
                     sleep(2000);
@@ -195,7 +195,7 @@ public class FarAutoRed extends LinearOpMode {
 
                     sleep(1000);
 
-                    arm_subsystem.grab();
+                    arm_subsystem.grabLeft();
                     break;
             }
             telemetry.addData("drive", drive.isBusy());

@@ -19,6 +19,7 @@ public class TeleOp1 extends LinearOpMode {
     GamepadEx coDriver;
     private Arm arm_subsystem;
     private Button low_button, high_button;
+    private int slidePos = 0;
     Motor leftFront, rightFront, leftRear, rightRear;
     private MecanumDrive drive;
     private double armTimeDif = 0;
@@ -35,8 +36,11 @@ public class TeleOp1 extends LinearOpMode {
         coDriver = new GamepadEx(gamepad2);
         arm_subsystem = new Arm(hardwareMap);
 
-        ToggleButtonReader clawToggle = new ToggleButtonReader(
-                coDriver, GamepadKeys.Button.A
+        ToggleButtonReader leftBumperToggle = new ToggleButtonReader(
+                coDriver, GamepadKeys.Button.LEFT_BUMPER
+        );
+        ToggleButtonReader rightBumperToggle = new ToggleButtonReader(
+                coDriver, GamepadKeys.Button.RIGHT_BUMPER
         );
         /*
         Button claw = new GamepadButton(
@@ -48,6 +52,8 @@ public class TeleOp1 extends LinearOpMode {
         ToggleButtonReader armToggle = new ToggleButtonReader(
                 coDriver, GamepadKeys.Button.B
         );
+        boolean leftChanged = false;
+        boolean rightChanged = false;
 
         /*
         Button arm = new GamepadButton(
@@ -76,7 +82,7 @@ public class TeleOp1 extends LinearOpMode {
         IMU imu = hardwareMap.get(IMU.class, "imu");
         // Adjust the orientation parameters to match your robot
         IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
-                RevHubOrientationOnRobot.LogoFacingDirection.FORWARD,
+                RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
                 RevHubOrientationOnRobot.UsbFacingDirection.UP));
         drive = new MecanumDrive(leftFront,rightFront,leftRear,rightRear);
         // Without this, the REV Hub's orientation is assumed to be logo up / USB forward
@@ -84,8 +90,8 @@ public class TeleOp1 extends LinearOpMode {
         waitForStart();
         if (isStopRequested()) return;
         while (opModeIsActive()) {
-            double y = -gamepad1.left_stick_y; // Remember, Y stick value is reversed
-            double x = gamepad1.left_stick_x * 1.1; // Counteract imperfect strafing
+            double y = -gamepad1.left_stick_x; // Remember, Y stick value is reversed
+            double x = gamepad1.left_stick_y * 1.1; // Counteract imperfect strafing
             double rx = gamepad1.right_stick_x;
 
             double botHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
@@ -118,6 +124,9 @@ public class TeleOp1 extends LinearOpMode {
 
             armTimeDif = arm_subsystem.armClock.nanoLifespan();
             arm_subsystem.armClock.reset();
+            arm_subsystem.setSlidePower(
+                 coDriver.getLeftX()
+            );
 
             leftFront.set(frontLeftPower*multiplier);
             leftRear.set(backLeftPower*multiplier);
@@ -125,18 +134,33 @@ public class TeleOp1 extends LinearOpMode {
             rightRear.set(backRightPower*multiplier);
             arm_subsystem.setElbowPosition(arm_subsystem.getElbowPosition()+coDriver.getRightY()*0.0000000003*armTimeDif);
 
-            if (coDriver.getButton(GamepadKeys.Button.RIGHT_BUMPER)) {
-                arm_subsystem.grab();
-            } else if (coDriver.getButton(GamepadKeys.Button.LEFT_BUMPER)){
-                arm_subsystem.release();
+
+            if(coDriver.getButton(GamepadKeys.Button.A)){
+                arm_subsystem.setIntake(1);
+            } else {
+                arm_subsystem.setIntake(0);
             }
+            if(coDriver.getButton(GamepadKeys.Button.LEFT_BUMPER) && !leftChanged){
+                if(!arm_subsystem.getLeftState()) arm_subsystem.grabLeft();
+                else arm_subsystem.releaseLeft();
+                leftChanged = true;
+            } else if (!coDriver.getButton(GamepadKeys.Button.LEFT_BUMPER)) leftChanged = false;
+
+            if(coDriver.getButton(GamepadKeys.Button.RIGHT_BUMPER) && !rightChanged){
+                if(!arm_subsystem.getRightState()) arm_subsystem.grabRight();
+                else arm_subsystem.releaseRight();
+                rightChanged = true;
+            } else if (!coDriver.getButton(GamepadKeys.Button.RIGHT_BUMPER)) rightChanged = false;
+            /*
             else if(coDriver.getButton(GamepadKeys.Button.A)){
                 arm_subsystem.low();
             } else if (coDriver.getButton(GamepadKeys.Button.B)){
                 arm_subsystem.high();
             } else if(coDriver.getButton(GamepadKeys.Button.Y)){
                 arm_subsystem.drop();
-            } else if(coDriver.getButton(GamepadKeys.Button.DPAD_DOWN)){
+
+             */
+             if(coDriver.getButton(GamepadKeys.Button.DPAD_DOWN)){
                 arm_subsystem.hangDown();
             }else if (coDriver.getButton(GamepadKeys.Button.DPAD_UP)){
                 arm_subsystem.hangUp();
@@ -152,24 +176,24 @@ public class TeleOp1 extends LinearOpMode {
             if (gamepad1.options) {
                 imu.resetYaw();
             }
-
+            leftBumperToggle.readValue();
+            rightBumperToggle.readValue();
+            arm_subsystem.update();
 
             telemetry.addData("left X", driver.getLeftX());
             telemetry.addData("left Y", driver.getLeftY());
-            telemetry.addData("a state:", clawToggle.getState());
-            telemetry.addData("b state:", armToggle.getState());
+            telemetry.addData("leftB state:", leftBumperToggle.getState());
+            telemetry.addData("rightB state:", rightBumperToggle.getState());
             telemetry.addData("a:", coDriver.getButton(GamepadKeys.Button.A));
             telemetry.addData("b:", coDriver.getButton(GamepadKeys.Button.B));
             telemetry.addData("elbow anlge", arm_subsystem.getElbowAngle());
+            telemetry.addData("elbow position", arm_subsystem.getElbowPosition());
             telemetry.addData("wrist angle,", arm_subsystem.getWristAngle());
             telemetry.addData("elbow Position", arm_subsystem.getElbowPosition());
             telemetry.update();
-            armToggle.readValue();
-            clawToggle.readValue();
-            arm_subsystem.update();
+
 
 
             }
         }
     }
-

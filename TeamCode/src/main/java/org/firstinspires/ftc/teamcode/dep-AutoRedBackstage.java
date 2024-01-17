@@ -7,49 +7,44 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.teamcode.FSMtest;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.processors.BlueDetection;
 import org.firstinspires.ftc.teamcode.processors.RedDetection;
-import org.firstinspires.ftc.vision.VisionPortal;
-import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
-import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 
-import java.util.List;
-
-@Autonomous(name="AutoRedBackstage")
+@Autonomous(name = "RedBackstage")
 public class AutoRedBackstage extends LinearOpMode {
-
-    SampleMecanumDrive drive;
-    enum State{
-        TRAJECTORY_1,
-        TURN_RIGHT,
-        TURN_LEFT,
+    enum State {
+        FORWARD,
+        LEFT,
+        MIDDLE,
+        RIGHT,
         DROP1,
-        TRAJECTORY2,
-        TURN1,
-        TRACK,
+        TURN,
+        FORWARD2,
         DROP2,
         IDLE
     }
+
+    SampleMecanumDrive drive;
     Arm arm_subsystem;
     OpenCvCamera webcam;
     volatile RedDetection.ObjectPosition position;
-    List<AprilTagDetection> myAprilTagDetections;
-    private AprilTagProcessor aprilTag;
-    private VisionPortal visionPortal;
-    private int DESIRED_TAG_ID = 1;
     @Override
     public void runOpMode() throws InterruptedException {
 
+
+        drive = new SampleMecanumDrive(hardwareMap);
+        State curentState = State.IDLE;
+        /*
         int cameraMonitorViewId = hardwareMap.appContext
                 .getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
         RedDetection pipeline = new RedDetection(telemetry);
         webcam.setPipeline(pipeline);
-
         webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
             public void onOpened() {
@@ -62,275 +57,82 @@ public class AutoRedBackstage extends LinearOpMode {
             }
         });
 
+         */
 
-        ElapsedTime timer = new ElapsedTime();
-
-        drive = new SampleMecanumDrive(hardwareMap);
-
-        Trajectory forward = drive.trajectoryBuilder(new Pose2d())
-                .forward(35)
+        Pose2d startPose = new Pose2d(0, 0, 0);
+        ElapsedTime waitTimer1 = new ElapsedTime();
+        Trajectory forward = drive.trajectoryBuilder(startPose)
+                .forward(36)
                 .build();
-        Trajectory right = drive.trajectoryBuilder(new Pose2d())
-                .forward(25)
+        Trajectory forward2 = drive.trajectoryBuilder(forward.end())
+                .forward(30)
                 .build();
-        Trajectory left = drive.trajectoryBuilder(new Pose2d())
-                .forward(38)
+        Trajectory left = drive.trajectoryBuilder(forward.end())
+                .strafeLeft(10)
                 .build();
-
-        arm_subsystem = new Arm(hardwareMap);
-        State currentState = State.TRAJECTORY_1;
-
-
-        arm_subsystem.grab();
-
-        sleep(3000);
-
-        telemetry.addData("pos", pipeline.getPosition());
-        telemetry.update();
-
-
-
-        //initAprilTag();
+        Trajectory middle = drive.trajectoryBuilder(forward.end())
+                .forward(6)
+                .build();
+        Trajectory right = drive.trajectoryBuilder(forward.end())
+                .strafeRight(10)
+                .build();
+        curentState = State.FORWARD;
+        drive.followTrajectoryAsync(forward);
         waitForStart();
+        position = RedDetection.ObjectPosition.LEFT;
+        if (isStopRequested()) return;
+        while (opModeIsActive()) {
+            switch (curentState) {
+                case FORWARD:
+                    if (!drive.isBusy()) {
+                        if(position == RedDetection.ObjectPosition.LEFT){
+                            curentState = State.LEFT;
+                            drive.followTrajectoryAsync(left);
+                        } else if (position == RedDetection.ObjectPosition.CENTER){
+                            curentState = State.LEFT;
+                            drive.followTrajectoryAsync(middle);
+                        } else {
+                            curentState = State.LEFT;
+                            drive.followTrajectoryAsync(right);
+                        }
 
-        position = pipeline.getPosition();
-
-        if(isStopRequested()) return;
-        if(opModeIsActive()) {
-            //myAprilTagDetections = aprilTag.getDetections();
-            arm_subsystem.grab();
-
-            telemetry.addData("drive", drive.isBusy());
-            telemetry.addData("state", currentState);
-            telemetry.addData("imu", Math.toDegrees(drive.getExternalHeading()));
-            telemetry.addData("pos", position);
-            telemetry.update();
-
-            switch(position){
+                    }
+                    break;
                 case LEFT:
-                    arm_subsystem.grab();
-
-                    sleep(500);
-
-                    drive.followTrajectory(drive.trajectoryBuilder(new Pose2d())
-                            .forward(5)
-                            .build());
-
-                    sleep(500);
-
-                    drive.followTrajectory(left);
-
-                    turnLeft();
-
-                    sleep(1000);
-
-                    stopMoving();
-
-                    arm_subsystem.low();
-                    arm_subsystem.update();
-
-                    sleep(1000);
-
-                    arm_subsystem.release();
-                    arm_subsystem.update();
-
-                    sleep(2000);
-
-                    arm_subsystem.high();
-                    arm_subsystem.update();
-
-                    sleep(2000);
-
-                    arm_subsystem.grab();
-
-                    //Go to wall
-
-                    turnRight();
-
-                    sleep(2000);
-
-                    stopMoving();
-
-                    sleep(500);
-
-                    drive.followTrajectory(drive.trajectoryBuilder(new Pose2d())
-                            .forward(56)
-                            .build());
-
-                    drive.followTrajectory(drive.trajectoryBuilder(new Pose2d())
-                            .strafeLeft(15)
-                            .build());
-
-
-                    dropOnBoard();
+                    if(!drive.isBusy()){
+                        curentState = State.DROP1;
+                        //TODO: add arm drop
+                        waitTimer1.reset();
+                    }
                     break;
-                case RIGHT:
-                    arm_subsystem.grab();
-
-                    sleep(500);
-
-                    drive.followTrajectory(right);
-
-                    turnRight();
-
-                    sleep(500);
-
-                    stopMoving();
-
-                    arm_subsystem.low();
-                    arm_subsystem.update();
-
-                    sleep(1000);
-
-                    arm_subsystem.release();
-                    arm_subsystem.update();
-
-                    sleep(2000);
-
-                    arm_subsystem.high();
-                    arm_subsystem.update();
-
-                    sleep(1500);
-
-                    arm_subsystem.grab();
-
-                    sleep(500);
-
-                    //Go to wall
-
-                    turnRight();
-
-                    sleep(500);
-
-                    stopMoving();
-
-                    drive.followTrajectory(drive.trajectoryBuilder(new Pose2d())
-                            .strafeRight(30)
-                            .build());
-
-                    drive.followTrajectory(drive.trajectoryBuilder(new Pose2d())
-                            .forward(30)
-                            .build());
-
-                    drive.followTrajectory(drive.trajectoryBuilder(new Pose2d())
-                            .strafeLeft(24)
-                            .build());
-
-                    drive.followTrajectory(drive.trajectoryBuilder(new Pose2d())
-                            .forward(30)
-                            .build());
-
-                    dropOnBoard();
-
+                case DROP1:
+                    if (waitTimer1.seconds() > 2) {
+                        curentState = State.TURN;
+                        drive.turn(Math.toRadians(-90));
+                    }
                     break;
-                case CENTER:
-                    arm_subsystem.grab();
-
-                    sleep(500);
-
-                    drive.followTrajectory(forward);
-
-                    drive.followTrajectory(drive.trajectoryBuilder(new Pose2d())
-                            .strafeRight(12)
-                            .build());
-
-                    arm_subsystem.low();
-                    arm_subsystem.update();
-
-                    sleep(1000);
-
-                    arm_subsystem.release();
-                    arm_subsystem.update();
-
-                    sleep(2000);
-
-                    arm_subsystem.high();
-                    arm_subsystem.update();
-
-                    sleep(1500);
-
-                    arm_subsystem.grab();
-
-                    sleep(500);
-
-                    drive.followTrajectory(drive.trajectoryBuilder(new Pose2d())
-                            .back(12)
-                            .build());
-
-                    turnRight();
-
-                    sleep(1000);
-
-                    stopMoving();
-
-                    drive.followTrajectory(drive.trajectoryBuilder(new Pose2d())
-                            .forward(60)
-                            .build());
-
-                    drive.followTrajectory(drive.trajectoryBuilder(new Pose2d())
-                            .strafeLeft(18)
-                            .build());
-
-                   dropOnBoard();
-
+                case TURN:
+                    if (!drive.isBusy()) {
+                        curentState = State.FORWARD2;
+                        drive.followTrajectoryAsync(forward2);
+                    }
+                    break;
+                case FORWARD2:
+                    if(!drive.isBusy()) {
+                        curentState = State.DROP2;
+                        //TODO: add arm drop
+                        waitTimer1.reset();
+                    }
+                case DROP2:
+                    if(waitTimer1.seconds() > 2){
+                        curentState = State.IDLE;
+                    }
+                    break;
+                case IDLE:
                     break;
             }
-            telemetry.addData("drive", drive.isBusy());
-            telemetry.addData("state", currentState);
-            telemetry.addData("imu", Math.toDegrees(drive.getExternalHeading()));
-            telemetry.addData("pos", position);
-            telemetry.update();
+
+            drive.update();
         }
     }
-
-    /*
-    private void initAprilTag(){
-        aprilTag = new AprilTagProcessor.Builder()
-                .setLensIntrinsics(1136.7,1136.7, 281.597,138.901)// constants from calibrating camera with 3d zephyr
-                .build();
-        visionPortal = new VisionPortal.Builder()
-                .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
-                .addProcessor(aprilTag)
-                .build();
-    }
-     */
-
-    public void turnRight() {
-        drive.leftFront.setPower(0.5);
-        drive.leftRear.setPower(0.5);
-        drive.rightFront.setPower(-0.5);
-        drive.rightRear.setPower(-0.5);
-    }
-
-    public void turnLeft() {
-        drive.leftFront.setPower(-0.5);
-        drive.leftRear.setPower(-0.5);
-        drive.rightFront.setPower(0.5);
-        drive.rightRear.setPower(0.5);
-    }
-
-    public void stopMoving() {
-        drive.leftFront.setPower(0);
-        drive.leftRear.setPower(0);
-        drive.rightFront.setPower(0);
-        drive.rightRear.setPower(0);
-    }
-
-    public void dropOnBoard() {
-        arm_subsystem.drop();
-        arm_subsystem.update();
-
-        sleep(2000);
-
-        arm_subsystem.release();
-
-        sleep(2000);
-
-        arm_subsystem.high();
-        arm_subsystem.update();
-
-        sleep(2000);
-    }
-
-
 }

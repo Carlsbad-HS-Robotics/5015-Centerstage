@@ -4,6 +4,7 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -78,9 +79,14 @@ public class SafeAuto extends LinearOpMode {
 
         arm_subsystem = new Arm(hardwareMap);
         State currentState = State.TRAJECTORY_1;
+/*
+        drive.leftRear.setDirection(DcMotorSimple.Direction.REVERSE);
+        drive.leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
+        drive.rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
 
+ */
 
-        arm_subsystem.grab();
+        arm_subsystem.grabLeft();
 
         sleep(3000);
 
@@ -97,9 +103,13 @@ public class SafeAuto extends LinearOpMode {
         if(isStopRequested()) return;
         if(opModeIsActive()) {
             //myAprilTagDetections = aprilTag.getDetections();
-            drive.setMotorPowers(1,1,1,1);
+            //drive.setMotorPowers(1,1,1,1);
+            drive.leftFront.setPower(1);
+            drive.rightFront.setPower(-1);
+            drive.leftRear.setPower(-1);
+            drive.rightRear.setPower(1);
 
-            sleep(500);
+            sleep(1000);
 
             drive.setMotorPowers(0,0,0,0);
 
