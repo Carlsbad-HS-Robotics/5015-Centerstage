@@ -35,9 +35,9 @@ import java.util.List;
 
 @Autonomous(name = "Red Backstage")
 public class autoRedBackstage extends LinearOpMode {
-    Arm arm_subsystem = new Arm(hardwareMap);
+    //Arm arm_subsystem = new Arm(hardwareMap);
     CuttleRevHub controlHub = new CuttleRevHub(hardwareMap,CuttleRevHub.HubTypes.CONTROL_HUB);
-    CuttleRevHub expansionHub = new CuttleRevHub(hardwareMap,CuttleRevHub.HubTypes.EXPANSION_HUB);
+    //CuttleRevHub expansionHub = new CuttleRevHub(hardwareMap,CuttleRevHub.HubTypes.EXPANSION_HUB);
     CuttleEncoder LFEncoder ;
     CuttleEncoder RFEncoder ;
     CuttleEncoder LBEncoder;
@@ -131,7 +131,7 @@ public class autoRedBackstage extends LinearOpMode {
         queue.addTask(new CustomTask(() -> {
             switch (position) {
                 case LEFT:
-                    arm_subsystem.grab();
+                    //arm_subsystem.grab();
                     autoList.addTask(new DelayTask(500));
 
                     autoList.addTask(new PointTask(
@@ -142,16 +142,16 @@ public class autoRedBackstage extends LinearOpMode {
                             ptpController
                     ));
 
-                    arm_subsystem.low();
-                    arm_subsystem.update();
+                    //arm_subsystem.low();
+                    //arm_subsystem.update();
 
                     autoList.addTask(new DelayTask(1000));
 
-                    arm_subsystem.release();
-                    arm_subsystem.update();
+                    //arm_subsystem.release();
+                    //arm_subsystem.update();
                     break;
                 case RIGHT:
-                    arm_subsystem.grab();
+                    //arm_subsystem.grab();
                     queue.addTask(new DelayTask(500));
 
                     autoList.addTask(new PointTask(
