@@ -15,13 +15,13 @@ public class Arm {
 
   private ServoEx elbow0;
   private ServoEx elbow1;
-  private ServoEx claw;
-  private ServoEx claw1;
-  private ServoEx wrist;
-  private CRServo hang0;
-  private CRServo hang1;
-  private Motor vHang;
-  private Motor slide1;
+  private ServoEx claw  ;
+  private ServoEx claw1 ;
+  private ServoEx wrist ;
+  private CRServo hang0 ;
+  private CRServo hang1 ;
+  private Motor   vHang ;
+  private Motor   slide1;
 
   boolean isLeft = false;
   boolean isRight = false;
