@@ -18,7 +18,7 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 
 import java.util.List;
-@dissable
+
 @Autonomous(name="AutoSafe")
 public class SafeAuto extends LinearOpMode {
 

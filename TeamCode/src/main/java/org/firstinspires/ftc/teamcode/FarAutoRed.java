@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.processors.BlueDetection;
+import org.firstinspires.ftc.teamcode.processors.RedDetection;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
@@ -17,9 +18,9 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 
 import java.util.List;
-@dissable
-@Autonomous(name="AutoFarBlue")
-public class FarAutoBlue extends LinearOpMode {
+
+@Autonomous(name="FarAutoRed")
+public class FarAutoRed extends LinearOpMode {
 
     SampleMecanumDrive drive;
     enum State{
@@ -35,7 +36,7 @@ public class FarAutoBlue extends LinearOpMode {
     }
     Arm arm_subsystem;
     OpenCvCamera webcam;
-    volatile BlueDetection.ObjectPosition position;
+    volatile RedDetection.ObjectPosition position;
     List<AprilTagDetection> myAprilTagDetections;
     private AprilTagProcessor aprilTag;
     private VisionPortal visionPortal;
@@ -46,7 +47,7 @@ public class FarAutoBlue extends LinearOpMode {
         int cameraMonitorViewId = hardwareMap.appContext
                 .getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
-        BlueDetection pipeline = new BlueDetection(telemetry);
+        RedDetection pipeline = new RedDetection(telemetry);
         webcam.setPipeline(pipeline);
 
         webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
@@ -67,7 +68,7 @@ public class FarAutoBlue extends LinearOpMode {
         drive = new SampleMecanumDrive(hardwareMap);
 
         Trajectory forward = drive.trajectoryBuilder(new Pose2d())
-                .forward(38)
+                .forward(32)
                 .build();
         Trajectory right = drive.trajectoryBuilder(new Pose2d())
                 .forward(33)
@@ -174,6 +175,10 @@ public class FarAutoBlue extends LinearOpMode {
                     sleep(500);
 
                     drive.followTrajectory(forward);
+
+                    drive.followTrajectory(drive.trajectoryBuilder(new Pose2d())
+                            .strafeLeft(18)
+                            .build());
 
                     arm_subsystem.low();
                     arm_subsystem.update();

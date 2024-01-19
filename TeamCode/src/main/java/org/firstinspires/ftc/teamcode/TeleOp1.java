@@ -23,6 +23,7 @@ public class TeleOp1 extends LinearOpMode {
     Motor leftFront, rightFront, leftRear, rightRear;
     private MecanumDrive drive;
     private double armTimeDif = 0;
+
     @Override
     public void runOpMode() throws InterruptedException {
         leftFront = new Motor(hardwareMap, "leftFront", Motor.GoBILDA.RPM_312);
@@ -84,7 +85,7 @@ public class TeleOp1 extends LinearOpMode {
         IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
                 RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
                 RevHubOrientationOnRobot.UsbFacingDirection.UP));
-        drive = new MecanumDrive(leftFront,rightFront,leftRear,rightRear);
+        drive = new MecanumDrive(leftFront, rightFront, leftRear, rightRear);
         // Without this, the REV Hub's orientation is assumed to be logo up / USB forward
         imu.initialize(parameters);
         waitForStart();
@@ -101,7 +102,7 @@ public class TeleOp1 extends LinearOpMode {
             double rotY;
 
             // Rotate the movement direction counter to the bot's rotation
-            if(!gamepad1.left_bumper) {
+            if (!gamepad1.left_bumper) {
                 rotX = x * Math.cos(-botHeading) - y * Math.sin(-botHeading);
                 rotY = x * Math.sin(-botHeading) + y * Math.cos(-botHeading);
             } else {
@@ -120,34 +121,34 @@ public class TeleOp1 extends LinearOpMode {
             double frontRightPower = (rotY - rotX - rx) / denominator;
             double backRightPower = (rotY + rotX - rx) / denominator;
 
-            double multiplier = 1-gamepad1.right_trigger*0.75;
+            double multiplier = 1 - gamepad1.right_trigger * 0.75;
 
             armTimeDif = arm_subsystem.armClock.nanoLifespan();
             arm_subsystem.armClock.reset();
             arm_subsystem.setSlidePower(
-                 coDriver.getLeftX()
+                    coDriver.getLeftX()
             );
 
-            leftFront.set(frontLeftPower*multiplier);
-            leftRear.set(backLeftPower*multiplier);
-            rightFront.set(frontRightPower*multiplier);
-            rightRear.set(backRightPower*multiplier);
-            arm_subsystem.setElbowPosition(arm_subsystem.getElbowPosition()+coDriver.getRightY()*0.0000000003*armTimeDif);
+            leftFront.set(frontLeftPower * multiplier);
+            leftRear.set(backLeftPower * multiplier);
+            rightFront.set(frontRightPower * multiplier);
+            rightRear.set(backRightPower * multiplier);
+            arm_subsystem.setElbowPosition(arm_subsystem.getElbowPosition() + coDriver.getRightY() * 0.0000000003 * armTimeDif);
 
 
-            if(coDriver.getButton(GamepadKeys.Button.A)){
+            if (coDriver.getButton(GamepadKeys.Button.A)) {
                 arm_subsystem.setIntake(1);
             } else {
                 arm_subsystem.setIntake(0);
             }
-            if(coDriver.getButton(GamepadKeys.Button.LEFT_BUMPER) && !leftChanged){
-                if(!arm_subsystem.getLeftState()) arm_subsystem.grabLeft();
+            if (coDriver.getButton(GamepadKeys.Button.LEFT_BUMPER) && !leftChanged) {
+                if (!arm_subsystem.getLeftState()) arm_subsystem.grabLeft();
                 else arm_subsystem.releaseLeft();
                 leftChanged = true;
             } else if (!coDriver.getButton(GamepadKeys.Button.LEFT_BUMPER)) leftChanged = false;
 
-            if(coDriver.getButton(GamepadKeys.Button.RIGHT_BUMPER) && !rightChanged){
-                if(!arm_subsystem.getRightState()) arm_subsystem.grabRight();
+            if (coDriver.getButton(GamepadKeys.Button.RIGHT_BUMPER) && !rightChanged) {
+                if (!arm_subsystem.getRightState()) arm_subsystem.grabRight();
                 else arm_subsystem.releaseRight();
                 rightChanged = true;
             } else if (!coDriver.getButton(GamepadKeys.Button.RIGHT_BUMPER)) rightChanged = false;
@@ -160,17 +161,16 @@ public class TeleOp1 extends LinearOpMode {
                 arm_subsystem.drop();
 
              */
-             if(coDriver.getButton(GamepadKeys.Button.DPAD_DOWN)){
+            if (coDriver.getButton(GamepadKeys.Button.DPAD_DOWN)) {
                 arm_subsystem.hangDown();
-            }else if (coDriver.getButton(GamepadKeys.Button.DPAD_UP)){
+            } else if (coDriver.getButton(GamepadKeys.Button.DPAD_UP)) {
                 arm_subsystem.hangUp();
 
-            } else if(coDriver.getButton(GamepadKeys.Button.DPAD_LEFT)){
+            } else if (coDriver.getButton(GamepadKeys.Button.DPAD_LEFT)) {
                 arm_subsystem.hangServoDown();
-            } else if(coDriver.getButton(GamepadKeys.Button.DPAD_RIGHT)) {
+            } else if (coDriver.getButton(GamepadKeys.Button.DPAD_RIGHT)) {
                 arm_subsystem.hangServoUp();
-            }
-            else{
+            } else {
                 arm_subsystem.hangOff();
             }
             if (gamepad1.options) {
@@ -193,7 +193,6 @@ public class TeleOp1 extends LinearOpMode {
             telemetry.update();
 
 
-
-            }
         }
     }
+}

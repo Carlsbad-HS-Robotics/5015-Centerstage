@@ -7,11 +7,11 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
-@dissable
-@Autonomous(name="AutoBlue(real)")
-public class Auto3 extends LinearOpMode {
-    Definitions drive;
-    //SampleMecanumDrive drive;
+
+@Autonomous(name="AutoRed")
+public class Auto4 extends LinearOpMode {
+
+    SampleMecanumDrive drive;
     enum State{
         TRAJECTORY_1,
         DROP1,
@@ -24,47 +24,33 @@ public class Auto3 extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         ElapsedTime timer = new ElapsedTime();
-        drive = new Definitions(hardwareMap);
 
-        /*
+
+        drive = new SampleMecanumDrive(hardwareMap);
+
         Trajectory forward = drive.trajectoryBuilder(new Pose2d())
                 .back(30)
                 .build();
         Trajectory backward = drive.trajectoryBuilder(new Pose2d())
                 .forward(30)
                 .build();
-        Trajectory left = drive.trajectoryBuilder(new Pose2d())
-                .strafeLeft(24)
+        Trajectory right = drive.trajectoryBuilder(new Pose2d())
+                .strafeRight(24)
                 .build();
+
+
         drive.followTrajectoryAsync(forward);
-        arm_subsystem = new Arm(hardwareMap);
         State currentState = State.IDLE;
-
-         */
         waitForStart();
-
-        drive.rightFront.set(-1);
-        drive.leftFront.set(1);
-        drive.rightRear.set(1);
-        drive.leftRear.set(-1);
-
-        sleep(1000);
-
-        drive.rightFront.set(0);
-        drive.leftFront.set(0);
-        drive.rightRear.set(0);
-        drive.leftRear.set(0);
-
+        arm_subsystem = new Arm(hardwareMap);
         if(isStopRequested()) return;
         while(opModeIsActive()) {
-
-
-            /*switch(currentState){
+            switch(currentState){
                 case TRAJECTORY_1:
-                    arm_subsystem.grab();
+                    arm_subsystem.grabLeft();
                     if(!drive.isBusy()){
                         arm_subsystem.drop();
-                        arm_subsystem.high();
+                        arm_subsystem.low();
                         timer.reset();
                         currentState = State.DROP1;
                     }
@@ -79,8 +65,8 @@ public class Auto3 extends LinearOpMode {
                     break;
                 case TRAJECTORY2:
                     if(!drive.isBusy()){
-                        drive.followTrajectoryAsync(left);
-                        arm_subsystem.grab();
+                        drive.followTrajectoryAsync(right);
+                        arm_subsystem.grabLeft();
                         currentState = State.DROP2;
                     }
                     break;
@@ -93,19 +79,17 @@ public class Auto3 extends LinearOpMode {
                 case IDLE:
 
                     break;
-            }*/
-
-
+            }
 
             //Code goes here:
 
 
 
 
-            //drive.update();
+            drive.update();
         }
     }
-   // void forward(5000)
+    // void forward(5000)
 
 
 
