@@ -1,3 +1,5 @@
+// TODO add a header denoting who this code belongs to
+
 package org.firstinspires.ftc.teamcode;
 
 import com.arcrobotics.ftclib.command.button.Button;
@@ -18,6 +20,7 @@ public class TeleOp1 extends LinearOpMode {
     GamepadEx driver;
     GamepadEx coDriver;
     private Arm arm_subsystem;
+    // TODO remove unused variables
     private Button low_button, high_button;
     private int slidePos = 0;
     Motor leftFront, rightFront, leftRear, rightRear;
@@ -26,6 +29,7 @@ public class TeleOp1 extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
+        // TODO synchronize initialization code across all opmodes
         leftFront = new Motor(hardwareMap, "leftFront", Motor.GoBILDA.RPM_312);
         rightFront = new Motor(hardwareMap, "rightFront", Motor.GoBILDA.RPM_312);
         leftRear = new Motor(hardwareMap, "leftRear", Motor.GoBILDA.RPM_312);
@@ -36,23 +40,28 @@ public class TeleOp1 extends LinearOpMode {
         driver = new GamepadEx(gamepad1);
         coDriver = new GamepadEx(gamepad2);
         arm_subsystem = new Arm(hardwareMap);
-
+        // TODO remove commented out code
+/*
         ToggleButtonReader leftBumperToggle = new ToggleButtonReader(
                 coDriver, GamepadKeys.Button.LEFT_BUMPER
         );
         ToggleButtonReader rightBumperToggle = new ToggleButtonReader(
                 coDriver, GamepadKeys.Button.RIGHT_BUMPER
         );
+
+ */
         /*
         Button claw = new GamepadButton(
                 coDriver,GamepadKeys.Button.A
         );
 
          */
-
+/*
         ToggleButtonReader armToggle = new ToggleButtonReader(
                 coDriver, GamepadKeys.Button.B
         );
+
+ */
         boolean leftChanged = false;
         boolean rightChanged = false;
 
@@ -91,8 +100,9 @@ public class TeleOp1 extends LinearOpMode {
         waitForStart();
         if (isStopRequested()) return;
         while (opModeIsActive()) {
+            // TODO refactor code for different robot functions, ie drive, arm, etc, into different java methods
             double y = -gamepad1.left_stick_x; // Remember, Y stick value is reversed
-            double x = gamepad1.left_stick_y * 1.1; // Counteract imperfect strafing
+            double x = gamepad1.left_stick_y * 1.1;
             double rx = gamepad1.right_stick_x;
 
             double botHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
@@ -111,10 +121,6 @@ public class TeleOp1 extends LinearOpMode {
             }
 
             rotX = rotX * 1.1;  // Counteract imperfect strafing
-
-            // Denominator is the largest motor power (absolute value) or 1
-            // This ensures all the powers maintain the same ratio,
-            // but only if at least one is out of the range [-1, 1]
             double denominator = Math.max(Math.abs(rotY) + Math.abs(rotX) + Math.abs(rx), 1);
             double frontLeftPower = (rotY + rotX + rx) / denominator;
             double backLeftPower = (rotY - rotX + rx) / denominator;
@@ -122,18 +128,17 @@ public class TeleOp1 extends LinearOpMode {
             double backRightPower = (rotY + rotX - rx) / denominator;
 
             double multiplier = 1 - gamepad1.right_trigger * 0.75;
-
-            armTimeDif = arm_subsystem.armClock.nanoLifespan();
-            arm_subsystem.armClock.reset();
-            arm_subsystem.setSlidePower(
-                    coDriver.getLeftX()
-            );
-
             leftFront.set(frontLeftPower * multiplier);
             leftRear.set(backLeftPower * multiplier);
             rightFront.set(frontRightPower * multiplier);
             rightRear.set(backRightPower * multiplier);
-            arm_subsystem.setElbowPosition(arm_subsystem.getElbowPosition() + coDriver.getRightY() * 0.0000000003 * armTimeDif);
+            ////////////////////////////////////////////////////////////////////////////////////
+            armTimeDif = arm_subsystem.armClock.nanoLifespan();
+            arm_subsystem.armClock.reset();
+            arm_subsystem.setSlidePower(coDriver.getLeftX());
+
+
+            arm_subsystem.setElbowPosition(arm_subsystem.getElbowPosition() + coDriver.getRightY());
 
 
             if (coDriver.getButton(GamepadKeys.Button.A)) {
@@ -176,14 +181,17 @@ public class TeleOp1 extends LinearOpMode {
             if (gamepad1.options) {
                 imu.resetYaw();
             }
+            /*
             leftBumperToggle.readValue();
             rightBumperToggle.readValue();
-            arm_subsystem.update();
 
+             */
+            arm_subsystem.update();
+//////////////////////////////////////////////////////////////////////////////////////////////
             telemetry.addData("left X", driver.getLeftX());
             telemetry.addData("left Y", driver.getLeftY());
-            telemetry.addData("leftB state:", leftBumperToggle.getState());
-            telemetry.addData("rightB state:", rightBumperToggle.getState());
+            //telemetry.addData("leftB state:", leftBumperToggle.getState());
+            //telemetry.addData("rightB state:", rightBumperToggle.getState());
             telemetry.addData("a:", coDriver.getButton(GamepadKeys.Button.A));
             telemetry.addData("b:", coDriver.getButton(GamepadKeys.Button.B));
             telemetry.addData("elbow anlge", arm_subsystem.getElbowAngle());

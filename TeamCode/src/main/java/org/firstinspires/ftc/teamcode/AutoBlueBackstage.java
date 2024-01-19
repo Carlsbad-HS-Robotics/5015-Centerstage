@@ -6,14 +6,9 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.teamcode.FSMtest;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.processors.BlueDetection;
-import org.firstinspires.ftc.teamcode.processors.BlueDetection;
 import org.openftc.easyopencv.OpenCvCamera;
-import org.openftc.easyopencv.OpenCvCameraFactory;
-import org.openftc.easyopencv.OpenCvCameraRotation;
 
 @Autonomous(name = "BLueBackstage")
 public class AutoBlueBackstage extends LinearOpMode {
@@ -38,7 +33,8 @@ public class AutoBlueBackstage extends LinearOpMode {
 
 
         drive = new SampleMecanumDrive(hardwareMap);
-        State curentState = State.IDLE;
+        // TODO fix spelling
+        State currentState = State.IDLE;
         /*
         int cameraMonitorViewId = hardwareMap.appContext
                 .getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
@@ -76,23 +72,23 @@ public class AutoBlueBackstage extends LinearOpMode {
         Trajectory right = drive.trajectoryBuilder(forward.end())
                 .strafeLeft(10)
                 .build();
-        curentState = State.FORWARD; //i dont think ineed to change this
+        currentState = State.FORWARD; //TODO: change this to the pipeline
         drive.followTrajectoryAsync(forward);
         waitForStart();
         position = BlueDetection.ObjectPosition.LEFT;
         if (isStopRequested()) return;
         while (opModeIsActive()) {
-            switch (curentState) {
+            switch (currentState) {
                 case FORWARD:
                     if (!drive.isBusy()) {
                         if(position == BlueDetection.ObjectPosition.LEFT){
-                            curentState = State.LEFT;
+                            currentState = State.LEFT;
                             drive.followTrajectoryAsync(left);
                         } else if (position == BlueDetection.ObjectPosition.CENTER){
-                            curentState = State.LEFT;
+                            currentState = State.LEFT;
                             drive.followTrajectoryAsync(middle);
                         } else {
-                            curentState = State.LEFT;
+                            currentState = State.LEFT;
                             drive.followTrajectoryAsync(right);
                         }
 
@@ -100,7 +96,7 @@ public class AutoBlueBackstage extends LinearOpMode {
                     break;
                 case LEFT:
                     if(!drive.isBusy()){
-                        curentState = State.DROP1;
+                        currentState = State.DROP1;
                         //TODO: add arm drop
 
                         waitTimer1.reset();
@@ -108,25 +104,25 @@ public class AutoBlueBackstage extends LinearOpMode {
                     break;
                 case DROP1:
                     if (waitTimer1.seconds() > 2) {
-                        curentState = State.TURN;
+                        currentState = State.TURN;
                         drive.turn(Math.toRadians(90));
                     }
                     break;
                 case TURN:
                     if (!drive.isBusy()) {
-                        curentState = State.FORWARD2;
+                        currentState = State.FORWARD2;
                         drive.followTrajectoryAsync(forward2);
                     }
                     break;
                 case FORWARD2:
                     if(!drive.isBusy()) {
-                        curentState = State.DROP2;
+                        currentState = State.DROP2;
                         //TODO: add arm drop
                         waitTimer1.reset();
                     }
                 case DROP2:
                     if(waitTimer1.seconds() > 2){
-                        curentState = State.IDLE;
+                        currentState = State.IDLE;
                     }
                     break;
                 case IDLE:
