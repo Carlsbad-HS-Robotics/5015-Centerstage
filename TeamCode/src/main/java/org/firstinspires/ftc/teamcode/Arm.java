@@ -28,6 +28,7 @@ public class Arm {
     boolean isRight = false;
 
     private Motor intake;
+    private double wristPosition;
     private double elbowPosition;
   /*
     SV claw 0 port 1 ex
@@ -70,6 +71,7 @@ public class Arm {
                 new SimpleServo(hMap, "elbow1", MIN_ANGLE, MAX_ANGLE, AngleUnit.DEGREES);
         wrist =
                 new SimpleServo(hMap, "wrist", MIN_ANGLE, MAX_ANGLE, AngleUnit.DEGREES);
+        /*
         claw =
                 new SimpleServo(hMap, "claw", MIN_ANGLE, MAX_ANGLE, AngleUnit.DEGREES);
         claw1 =
@@ -80,7 +82,9 @@ public class Arm {
         intake = new Motor(hMap, "intake", Motor.GoBILDA.RPM_312);
         vHang = new Motor(hMap, "vHang");
         hang0 = hMap.crservo.get("hang");
-        hang1 = hMap.crservo.get("hang1");
+        hang1 = hMap.crservo.get("hang1")
+        ;
+         */
 
         slide1.setRunMode(Motor.RunMode.RawPower);
         slide1.setPositionTolerance(50);
@@ -114,9 +118,9 @@ public class Arm {
     }
 
     public void setElbowPosition(double a) {
-        if (elbowPosition <= 1 && elbowPosition >= 0) {
+        if (a<= 1 && a >= 0) {
             elbowPosition = a;
-        } else if (elbowPosition > 1) {
+        } else if (a > 1) {
             elbowPosition = 1;
         } else {
             elbowPosition = 0;
@@ -198,6 +202,7 @@ public class Arm {
     public void update() {
         elbow0.setPosition(elbowPosition);
         elbow1.setPosition(elbowPosition);
+        wrist.setPosition(wristPosition);
     }
 
     public void setSlidePosition(int ticks) {
@@ -207,6 +212,15 @@ public class Arm {
             slide1.setTargetPosition(SLIDE_MAX);
         } else if (ticks < SLIDE_MIN) {
             slide1.setTargetPosition(SLIDE_MIN);
+        }
+    }
+    public void setWristPosition(double a){
+        if (a<= 1 && a >= 0) {
+            wristPosition = a;
+        } else if (a > 1) {
+            wristPosition = 1;
+        } else {
+            wristPosition = 0;
         }
     }
 
