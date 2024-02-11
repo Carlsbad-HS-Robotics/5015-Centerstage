@@ -33,8 +33,10 @@ public class RedDetection extends OpenCvPipeline {
 
     // Lower and upper boundaries for colors
     private static final Scalar
-            lower_red_bounds = new Scalar(125,0,0,255),
-            upper_red_bounds = new Scalar(255,120,120,255);
+            lower_red_bounds1 = new Scalar(0,70,50),
+            upper_red_bounds1 = new Scalar(10,255,255),
+            lower_red_bounds2 = new Scalar(170,70,50),
+            upper_red_bounds2 = new Scalar(180,255,255);
 
     // Color definitions
     private final Scalar
@@ -44,9 +46,15 @@ public class RedDetection extends OpenCvPipeline {
 
     // Percent and mat definitions
     private double leftPercent, rightPercent, midPercent;
-    private Mat leftMat = new Mat(),
-            rightMat = new Mat(),
+    private Mat leftMat1 = new Mat(),
+            rightMat1= new Mat(),
+            midMat1 = new Mat(),
+            leftMat = new Mat(),
+            rightMat= new Mat(),
             midMat = new Mat(),
+            leftMat2 = new Mat(),
+            rightMat2= new Mat(),
+            midMat2 = new Mat(),
             blurredMat = new Mat(),
             blurredMat1 = new Mat(),
             blurredMat2 = new Mat(),
@@ -88,6 +96,7 @@ public class RedDetection extends OpenCvPipeline {
     }
     @Override
     public Mat processFrame(Mat input) {
+        Imgproc.cvtColor(input,input,Imgproc.COLOR_RGB2HSV);
         // Noise reduction
         Imgproc.blur(input, blurredMat, new Size(5, 5));
         blurredMat1 = blurredMat.submat(new Rect(region1_pointA, region1_pointB));
@@ -99,11 +108,17 @@ public class RedDetection extends OpenCvPipeline {
         Imgproc.morphologyEx(blurredMat, blurredMat, Imgproc.MORPH_CLOSE, kernel);
 
         // Gets channels from given source mat
-        Core.inRange(blurredMat1, lower_red_bounds, upper_red_bounds, leftMat);
-        Core.inRange(blurredMat2, lower_red_bounds, upper_red_bounds, midMat);
-        Core.inRange(blurredMat3, lower_red_bounds, upper_red_bounds, rightMat);
+        Core.inRange(blurredMat1, lower_red_bounds1, upper_red_bounds1, leftMat1);
+        Core.inRange(blurredMat2, lower_red_bounds1, upper_red_bounds1, midMat1);
+        Core.inRange(blurredMat3, lower_red_bounds1, upper_red_bounds1, rightMat1);
+        Core.inRange(blurredMat1, lower_red_bounds2, upper_red_bounds2, leftMat2);
+        Core.inRange(blurredMat2, lower_red_bounds2, upper_red_bounds2, midMat2);
+        Core.inRange(blurredMat3, lower_red_bounds2, upper_red_bounds2, rightMat2);
 
         // Gets color specific values
+        Core.bitwise_or(leftMat1,leftMat2,leftMat);
+        Core.bitwise_or(midMat1,midMat2,midMat);
+        Core.bitwise_or(rightMat1,rightMat2,rightMat);
         leftPercent = Core.countNonZero(leftMat);
         rightPercent = Core.countNonZero(rightMat);
         midPercent = Core.countNonZero(midMat);

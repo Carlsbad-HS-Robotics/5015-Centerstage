@@ -6,31 +6,22 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.teamcode.robo.Arm;
 
 @TeleOp(name = "armtest")
 public class armTest extends LinearOpMode {
 int MIN_ANGLE = 0;
 int MAX_ANGLE = 3000;
-    private ServoEx elbow0;
-    private ServoEx elbow1;
-    private ServoEx wrist;
+    Arm arm_subsystem;
     @Override
     public void runOpMode() throws InterruptedException {
-        elbow0 =
-                new SimpleServo(hardwareMap, "elbow0", MIN_ANGLE, MAX_ANGLE, AngleUnit.DEGREES);
-        elbow1 =
-                new SimpleServo(hardwareMap, "elbow1", MIN_ANGLE, MAX_ANGLE, AngleUnit.DEGREES);
-        wrist =
-                new SimpleServo(hardwareMap, "wrist", MIN_ANGLE, MAX_ANGLE, AngleUnit.DEGREES);
-        elbow1.setInverted(true);
-
-
+    arm_subsystem = new Arm(hardwareMap);
 
         waitForStart();
         while(opModeIsActive() && !isStopRequested()){
-            elbow0.setPosition(1);
-            elbow1.setPosition(1);
-            wrist.setPosition(1);
+            arm_subsystem.setElbowPosition(arm_subsystem.getElbowPosition()+0.001*gamepad2.right_stick_y);
+            arm_subsystem.update();
+            telemetry.addData("elbow positomn", arm_subsystem.getElbowPosition());
             telemetry.update();
         }
     }

@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.auto;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
@@ -6,12 +6,17 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
-import org.firstinspires.ftc.teamcode.processors.BlueDetection;
+import org.firstinspires.ftc.teamcode.processors.RedDetection;
+import org.firstinspires.ftc.teamcode.processors.RedDetection;
+import org.firstinspires.ftc.teamcode.robo.Arm;
 import org.openftc.easyopencv.OpenCvCamera;
+import org.openftc.easyopencv.OpenCvCameraFactory;
+import org.openftc.easyopencv.OpenCvCameraRotation;
 
-@Autonomous(name = "BLueBackstage")
-public class AutoBlueBackstage extends LinearOpMode {
+@Autonomous(name = "RedBackstage")
+public class AutoRedBackstage extends LinearOpMode {
     enum State {
         FORWARD,
         LEFT,
@@ -27,7 +32,7 @@ public class AutoBlueBackstage extends LinearOpMode {
     SampleMecanumDrive drive;
     Arm arm_subsystem;
     OpenCvCamera webcam;
-    volatile BlueDetection.ObjectPosition position;
+    volatile RedDetection.ObjectPosition position;
     @Override
     public void runOpMode() throws InterruptedException {
 
@@ -35,11 +40,11 @@ public class AutoBlueBackstage extends LinearOpMode {
         drive = new SampleMecanumDrive(hardwareMap);
         // TODO fix spelling
         State currentState = State.IDLE;
-        /*
+        
         int cameraMonitorViewId = hardwareMap.appContext
                 .getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
-        BlueDetection pipeline = new BlueDetection(telemetry);
+        RedDetection pipeline = new RedDetection(telemetry);
         webcam.setPipeline(pipeline);
         webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
@@ -53,7 +58,7 @@ public class AutoBlueBackstage extends LinearOpMode {
             }
         });
 
-         */
+         
 
         Pose2d startPose = new Pose2d(0, 0, 0);
         ElapsedTime waitTimer1 = new ElapsedTime();
@@ -72,19 +77,19 @@ public class AutoBlueBackstage extends LinearOpMode {
         Trajectory right = drive.trajectoryBuilder(forward.end())
                 .strafeLeft(10)
                 .build();
-        currentState = State.FORWARD; //TODO: change this to the pipeline
+        currentState = State.FORWARD; 
         drive.followTrajectoryAsync(forward);
         waitForStart();
-        position = BlueDetection.ObjectPosition.LEFT;
+        position = pipeline.getPosition();//TODO: change this to the pipeline
         if (isStopRequested()) return;
         while (opModeIsActive()) {
             switch (currentState) {
                 case FORWARD:
                     if (!drive.isBusy()) {
-                        if(position == BlueDetection.ObjectPosition.LEFT){
+                        if(position == RedDetection.ObjectPosition.LEFT){
                             currentState = State.LEFT;
                             drive.followTrajectoryAsync(left);
-                        } else if (position == BlueDetection.ObjectPosition.CENTER){
+                        } else if (position == RedDetection.ObjectPosition.CENTER){
                             currentState = State.LEFT;
                             drive.followTrajectoryAsync(middle);
                         } else {
@@ -105,7 +110,7 @@ public class AutoBlueBackstage extends LinearOpMode {
                 case DROP1:
                     if (waitTimer1.seconds() > 2) {
                         currentState = State.TURN;
-                        drive.turn(Math.toRadians(90));
+                        drive.turn(Math.toRadians(-90));
                     }
                     break;
                 case TURN:

@@ -41,7 +41,7 @@ public class BlueDetection extends OpenCvPipeline {
     // Color definitions
     private final Scalar
             BLUE = new Scalar(240, 100, 100),
-            WHITE = new Scalar(0, 0, 100);
+            WHITE = new Scalar(255,255,255);
 
 
     // Percent and mat definitions

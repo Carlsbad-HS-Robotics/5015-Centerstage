@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.robo;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.hardware.ServoEx;
@@ -8,13 +8,14 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.MotionLibrary.util.NanoClock;
 
 @Config
 public class Arm {
 
-    private ServoEx elbow0;
+    public ServoEx elbow0;
     private ServoEx elbow1;
     private ServoEx claw;
     private ServoEx claw1;
@@ -23,6 +24,7 @@ public class Arm {
     private CRServo hang1;
     private Motor vHang;
     private Motor slide1;
+    private Motor slide0;
 
     boolean isLeft = false;
     boolean isRight = false;
@@ -39,6 +41,7 @@ public class Arm {
     SV elbow1 port 4 ex
     SV elbow 0 port 5  ex
     SV intakeLift0 port 1 ctrl
+    SV intakeLift1 port 5 ex
     MT intake port 2 ex
     MT vHang port 0 ex
     MT slide port 1 ex
@@ -65,12 +68,10 @@ public class Arm {
     public NanoClock armClock;
 
     public Arm(final HardwareMap hMap) {
-        elbow0 =
-                new SimpleServo(hMap, "elbow0", MIN_ANGLE, MAX_ANGLE, AngleUnit.DEGREES);
-        elbow1 =
-                new SimpleServo(hMap, "elbow1", MIN_ANGLE, MAX_ANGLE, AngleUnit.DEGREES);
-        wrist =
-                new SimpleServo(hMap, "wrist", MIN_ANGLE, MAX_ANGLE, AngleUnit.DEGREES);
+        elbow0 = new SimpleServo(hMap, "elbow0", MIN_ANGLE, MAX_ANGLE, AngleUnit.DEGREES);
+            elbow1 =new SimpleServo(hMap, "elbow1", MIN_ANGLE, MAX_ANGLE, AngleUnit.DEGREES);
+           // wrist =new SimpleServo(hMap, "wrist", MIN_ANGLE, MAX_ANGLE, AngleUnit.DEGREES);
+
         /*
         claw =
                 new SimpleServo(hMap, "claw", MIN_ANGLE, MAX_ANGLE, AngleUnit.DEGREES);
@@ -85,11 +86,11 @@ public class Arm {
         hang1 = hMap.crservo.get("hang1")
         ;
          */
-
+/*
         slide1.setRunMode(Motor.RunMode.RawPower);
         slide1.setPositionTolerance(50);
 
-        elbow1.setInverted(true);
+
         elbow0.setInverted(true);
         wrist.setInverted(true);
         slide1.setInverted(true);
@@ -97,6 +98,8 @@ public class Arm {
         hang0.setDirection(DcMotorSimple.Direction.REVERSE);
 
         armClock = new NanoClock();
+
+ */
     }
 
     public void high() {
@@ -107,6 +110,12 @@ public class Arm {
 
     public boolean getLeftState() {
         return isLeft;
+    }
+
+    public void rotateElbow(double a){
+
+        elbow0.rotateByAngle(a);
+        elbow1.rotateByAngle(a);
     }
 
     public void setSlidePower(double a) {
@@ -202,16 +211,19 @@ public class Arm {
     public void update() {
         elbow0.setPosition(elbowPosition);
         elbow1.setPosition(elbowPosition);
-        wrist.setPosition(wristPosition);
+       // wrist.setPosition(wristPosition);
     }
 
     public void setSlidePosition(int ticks) {
-        if (ticks < SLIDE_MAX && ticks > SLIDE_MIN) {
+        if (ticks <= SLIDE_MAX && ticks >= SLIDE_MIN) {
             slide1.setTargetPosition(ticks);
+            slide0.setTargetPosition(ticks);
         } else if (ticks > SLIDE_MAX) {
             slide1.setTargetPosition(SLIDE_MAX);
+            slide0.setTargetPosition(SLIDE_MAX);
         } else if (ticks < SLIDE_MIN) {
             slide1.setTargetPosition(SLIDE_MIN);
+            slide0.setTargetPosition(SLIDE_MIN);
         }
     }
     public void setWristPosition(double a){
@@ -246,5 +258,6 @@ public class Arm {
 
     public double getElbowPosition() {
         return elbowPosition;
+
     }
 }
