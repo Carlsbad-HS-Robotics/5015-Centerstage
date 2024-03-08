@@ -5,10 +5,13 @@ package org.firstinspires.ftc.teamcode.teleop;
 import com.arcrobotics.ftclib.command.button.Button;
 import com.arcrobotics.ftclib.drivebase.MecanumDrive;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
+import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -24,17 +27,25 @@ public class TeleOpforJustDriving extends LinearOpMode {
     private int slidePos = 0;
     Motor leftFront, rightFront, leftRear, rightRear;
     private MecanumDrive drive;
-    private double armTimeDif = 0;
 
+    private double armTimeDif = 0;
+    Motor vHang;
+    CRServo hang0;
+    CRServo hang1;
     @Override
     public void runOpMode() throws InterruptedException {
         // TODO synchronize initialization code across all opmodes
+        vHang = new Motor(hardwareMap, "vHang");
+        hang0 = hardwareMap.crservo.get("hang0");
+        hang1 = hardwareMap.crservo.get("hang1");
+        hang1.setDirection(DcMotorSimple.Direction.REVERSE);
         leftFront = new Motor(hardwareMap, "leftFront", Motor.GoBILDA.RPM_312);
         rightFront = new Motor(hardwareMap, "rightFront", Motor.GoBILDA.RPM_312);
         leftRear = new Motor(hardwareMap, "leftRear", Motor.GoBILDA.RPM_312);
         rightRear = new Motor(hardwareMap, "rightRear", Motor.GoBILDA.RPM_312);
         leftFront.setInverted(true);
         leftRear.setInverted(true);
+        rightFront.setInverted(true);
 
         driver = new GamepadEx(gamepad1);
         coDriver = new GamepadEx(gamepad2);
@@ -100,37 +111,23 @@ public class TeleOpforJustDriving extends LinearOpMode {
         if (isStopRequested()) return;
         while (opModeIsActive()) {
             // TODO refactor code for different robot functions, ie drive, arm, etc, into different java methods
-            double y = -gamepad1.left_stick_x; // Remember, Y stick value is reversed
-            double x = gamepad1.left_stick_y * 1.1;
+            double y = -gamepad1.left_stick_y; // Remember, Y stick value is reversed
+            double x = gamepad1.left_stick_x * 1.1; // Counteract imperfect strafing
             double rx = gamepad1.right_stick_x;
 
-            double botHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
+            // Denominator is the largest motor power (absolute value) or 1
+            // This ensures all the powers maintain the same ratio,
+            // but only if at least one is out of the range [-1, 1]
+            double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
+            double frontLeftPower = (y + x + rx) / denominator;
+            double backLeftPower = (y - x + rx) / denominator;
+            double frontRightPower = (y - x - rx) / denominator;
+            double backRightPower = (y + x - rx) / denominator;
 
-
-            double rotX;
-            double rotY;
-
-            // Rotate the movement direction counter to the bot's rotation
-            if (!gamepad1.left_bumper) {
-                rotX = x * Math.cos(-botHeading) - y * Math.sin(-botHeading);
-                rotY = x * Math.sin(-botHeading) + y * Math.cos(-botHeading);
-            } else {
-                rotX = x;
-                rotY = y;
-            }
-
-            rotX = rotX * 1.1;  // Counteract imperfect strafing
-            double denominator = Math.max(Math.abs(rotY) + Math.abs(rotX) + Math.abs(rx), 1);
-            double frontLeftPower = (rotY + rotX + rx) / denominator;
-            double backLeftPower = (rotY - rotX + rx) / denominator;
-            double frontRightPower = (rotY - rotX - rx) / denominator;
-            double backRightPower = (rotY + rotX - rx) / denominator;
-
-            double multiplier = 1 - gamepad1.right_trigger * 0.75;
-            leftFront.set(frontLeftPower * multiplier);
-            leftRear.set(backLeftPower * multiplier);
-            rightFront.set(frontRightPower * multiplier);
-            rightRear.set(backRightPower * multiplier);
+            leftFront.set(frontLeftPower);
+            rightFront.set(frontRightPower);
+            leftRear.set(backLeftPower);
+            rightRear.set(backRightPower);
             ////////////////////////////////////////////////////////////////////////////////////
             /*
             armTimeDif = arm_subsystem.armClock.nanoLifespan();
@@ -166,21 +163,23 @@ public class TeleOpforJustDriving extends LinearOpMode {
                 arm_subsystem.drop();
 
              */
-            /*
+
             if (coDriver.getButton(GamepadKeys.Button.DPAD_DOWN)) {
-                arm_subsystem.hangDown();
+                hangDown();
             } else if (coDriver.getButton(GamepadKeys.Button.DPAD_UP)) {
-                arm_subsystem.hangUp();
+               hangUp();
 
             } else if (coDriver.getButton(GamepadKeys.Button.DPAD_LEFT)) {
-                arm_subsystem.hangServoDown();
+                hangServoDown();
             } else if (coDriver.getButton(GamepadKeys.Button.DPAD_RIGHT)) {
-                arm_subsystem.hangServoUp();
+                hangServoUp();
             } else {
-                arm_subsystem.hangOff();
+                hangOff();
             }
 
-             */
+
+
+
 
             if (gamepad1.options) {
                 imu.resetYaw();
@@ -209,5 +208,32 @@ public class TeleOpforJustDriving extends LinearOpMode {
 
 
         }
+    }
+   public void hangUp() {
+        vHang.set(1);
+    }
+
+    public void hangDown() {
+        vHang.set(-1);
+    }
+
+    public void hangServoUp() {
+        hang0.setPower(1);
+        hang1.setPower(1);
+    }
+
+    public void hangServoDown() {
+        hang0.setPower(-1);
+        hang1.setPower(-1);
+    }
+    public void hangOff() {
+        hang0.setPower(0);
+        hang1.setPower(0);
+        vHang.set(0);
+    }
+
+    public void intake() {
+
+
     }
 }

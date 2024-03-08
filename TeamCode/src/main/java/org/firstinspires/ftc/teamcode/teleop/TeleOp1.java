@@ -138,7 +138,7 @@ public class TeleOp1 extends LinearOpMode {
             arm_subsystem.setSlidePower(coDriver.getLeftX());
 
 
-            arm_subsystem.setElbowPosition(arm_subsystem.getElbowPosition() + coDriver.getRightY());
+            //arm_subsystem.setElbowPosition(arm_subsystem.getElbowPosition() + coDriver.getRightY());
 
 
             if (coDriver.getButton(GamepadKeys.Button.A)) {
@@ -176,7 +176,7 @@ public class TeleOp1 extends LinearOpMode {
             } else if (coDriver.getButton(GamepadKeys.Button.DPAD_RIGHT)) {
                 arm_subsystem.hangServoUp();
             } else {
-                arm_subsystem.hangOff();
+                //arm_subsystem.hangOff();
             }
             if (gamepad1.options) {
                 imu.resetYaw();
@@ -186,7 +186,7 @@ public class TeleOp1 extends LinearOpMode {
             rightBumperToggle.readValue();
 
              */
-            arm_subsystem.update();
+            /*arm_subsystem.update();
 //////////////////////////////////////////////////////////////////////////////////////////////
             telemetry.addData("left X", driver.getLeftX());
             telemetry.addData("left Y", driver.getLeftY());
@@ -199,6 +199,10 @@ public class TeleOp1 extends LinearOpMode {
             telemetry.addData("wrist angle,", arm_subsystem.getWristAngle());
             telemetry.addData("elbow Position", arm_subsystem.getElbowPosition());
             telemetry.update();
+
+             */
+
+
 
 
         }

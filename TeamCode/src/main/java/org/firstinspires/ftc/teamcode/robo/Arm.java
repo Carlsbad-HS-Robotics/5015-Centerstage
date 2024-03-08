@@ -7,6 +7,7 @@ import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.roboctopi.cuttlefish.components.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -29,7 +30,7 @@ public class Arm {
     boolean isLeft = false;
     boolean isRight = false;
 
-    private Motor intake;
+    private Servo intake;
     private double wristPosition;
     private double elbowPosition;
   /*
@@ -43,7 +44,7 @@ public class Arm {
     SV intakeLift0 port 1 ctrl
     SV intakeLift1 port 5 ex
     MT intake port 2 ex
-    MT vHang port 0 ex
+    /*MT vHang port 0 ex
     MT slide port 1 ex
 
      */
@@ -72,7 +73,7 @@ public class Arm {
             elbow1 =new SimpleServo(hMap, "elbow1", MIN_ANGLE, MAX_ANGLE, AngleUnit.DEGREES);
            // wrist =new SimpleServo(hMap, "wrist", MIN_ANGLE, MAX_ANGLE, AngleUnit.DEGREES);
 
-        /*
+
         claw =
                 new SimpleServo(hMap, "claw", MIN_ANGLE, MAX_ANGLE, AngleUnit.DEGREES);
         claw1 =
@@ -80,12 +81,12 @@ public class Arm {
 
 
         slide1 = new Motor(hMap, "slide1", Motor.GoBILDA.RPM_312);
-        intake = new Motor(hMap, "intake", Motor.GoBILDA.RPM_312);
+        intake = new ServoEx(hMap, "intake", ServoEx);
         vHang = new Motor(hMap, "vHang");
         hang0 = hMap.crservo.get("hang");
         hang1 = hMap.crservo.get("hang1")
         ;
-         */
+
 /*
         slide1.setRunMode(Motor.RunMode.RawPower);
         slide1.setPositionTolerance(50);
@@ -202,17 +203,14 @@ public class Arm {
         hang1.setPower(-1);
     }
 
-    public void hangOff() {
-        hang0.setPower(0);
-        hang1.setPower(0);
-        vHang.set(0);
-    }
 
+/*
     public void update() {
         elbow0.setPosition(elbowPosition);
         elbow1.setPosition(elbowPosition);
        // wrist.setPosition(wristPosition);
     }
+*/
 
     public void setSlidePosition(int ticks) {
         if (ticks <= SLIDE_MAX && ticks >= SLIDE_MIN) {
@@ -247,7 +245,7 @@ public class Arm {
     public double getServoPos(ServoEx servo) {
         return servo.getAngle();
     }
-
+/*
     public double getElbowAngle() {
         return getServoPos(elbow0);
     }
@@ -260,4 +258,6 @@ public class Arm {
         return elbowPosition;
 
     }
+
+ */
 }

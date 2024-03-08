@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+/*package org.firstinspires.ftc.teamcode;
 
 import com.arcrobotics.ftclib.hardware.ServoEx;
 import com.arcrobotics.ftclib.hardware.SimpleServo;
@@ -21,8 +21,11 @@ int MAX_ANGLE = 3000;
         while(opModeIsActive() && !isStopRequested()){
             arm_subsystem.setElbowPosition(arm_subsystem.getElbowPosition()+0.001*gamepad2.right_stick_y);
             arm_subsystem.update();
-            telemetry.addData("elbow positomn", arm_subsystem.getElbowPosition());
+            telemetry.addData("elbow positon", arm_subsystem.getElbowPosition());
             telemetry.update();
         }
     }
+
+
 }
+*/
